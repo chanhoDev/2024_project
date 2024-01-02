@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/MedicationFragment">
+
+    <fragment
+        android:id="@+id/MedicationFragment"
+        android:name="com.chanho.alarm.MedicationFragment"
+        android:label="@string/first_fragment_label"
+        tools:layout="@layout/fragment_medication">
+
+        <action
+            android:id="@+id/action_MedicationFragment_to_MedicationRegisterFragment"
+            app:destination="@id/MedicationRegisterFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/MedicationRegisterFragment"
+        android:name="com.chanho.alarm.MedicationRegistrationFragment"
+        android:label="@string/second_fragment_label"
+        tools:layout="@layout/fragment_medication_registration">
+
+        <action
+            android:id="@+id/action_MedicationRegisterFragment_to_MedicationFragment"
+            app:destination="@id/MedicationFragment" />
+    </fragment>
+</navigation>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="primary_900">#10246B</color>
+    <color name="primary_800">#142F8C</color>
+    <color name="primary_700">#1A3CB5</color>
+    <color name="primary_600">#1943DA</color>
+    <color name="primary_500">#2555FF</color>
+    <color name="primary_400">#3381F6</color>
+    <color name="primary_300">#8BBAFF</color>
+    <color name="primary_200">#D3E5FF</color>
+    <color name="primary_100">#ECF4FF</color>
+    <color name="primary_50">#F1F7FF</color>
+
+    <color name="secondary_yellow_900">#55380D</color>
+    <color name="secondary_yellow_800">#795510</color>
+    <color name="secondary_yellow_700">#B58935</color>
+    <color name="secondary_yellow_600">#EDBE17</color>
+    <color name="secondary_yellow_500">#FFD74A</color>
+    <color name="secondary_yellow_400">#FFDF6E</color>
+    <color name="secondary_yellow_300">#FFE486</color>
+    <color name="secondary_yellow_200">#FFEDAC</color>
+    <color name="secondary_yellow_100">#FFF3C7</color>
+    <color name="secondary_yellow_50">#FFFBED</color>
+
+    <color name="secondary_purple_900">#5F0D39</color>
+    <color name="secondary_purple_800">#7D114A</color>
+    <color name="secondary_purple_700">#A11560</color>
+    <color name="secondary_purple_600">#CF1B7B</color>
+    <color name="secondary_purple_500">#E31E87</color>
+    <color name="secondary_purple_400">#E94B9F</color>
+    <color name="secondary_purple_300">#FC8CC8</color>
+    <color name="secondary_purple_200">#FFC7E5</color>
+    <color name="secondary_purple_100">#FFE3F2</color>
+    <color name="secondary_purple_50">#FFF4FA</color>
+
+    <color name="grey_900">#0E0E0E</color>
+    <color name="grey_800">#131313</color>
+    <color name="grey_700">#222222</color>
+    <color name="grey_600">#444444</color>
+    <color name="grey_500">#666666</color>
+    <color name="grey_400">#999999</color>
+    <color name="grey_300">#AAAAAA</color>
+    <color name="grey_200">#CCCCCC</color>
+    <color name="grey_150">#DDDDDD</color>
+    <color name="grey_100">#EDEDED</color>
+    <color name="grey_50">#FAFAFA</color>
+
+    <color name="error">#E8382C</color>
+    <color name="bg_00">#FFFFFF</color>
+    <color name="bg_01">#F2F5FB</color>
+    <color name="bg_02">#E4EBF4</color>
+    <color name="bg_03">#B5BDD1</color>
+    <color name="bg_04">#7882AB</color>
+
+    <color name="bg_pulse_check_home">#01A34C</color>
+    <color name="bg_warak_home">#7615F1</color>
+    <color name="bg_cognity_home">#E16029</color>
+
+    <color name="green_00A88A">#00A88A</color>
+  
+    <color name="bg_status_consume">#00A88A</color>
+    <color name="bg_status_purchased">#3381F6</color>
+    <color name="bg_status_canceled">#999999</color>
+    <color name="bg_status_consume_completed">#999999</color>
+    <color name="bg_status_expired">#999999</color>
+
+    <color name="bg_status_complete">#3381F6</color>
+    <color name="bg_status_fail">#E8382C</color>
+    <color name="bg_status_refund">#3381F6</color>
+</resources>

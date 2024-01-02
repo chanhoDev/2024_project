@@ -11,11 +11,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AlarmProject"
+        android:hardwareAccelerated="true"
         tools:targetApi="31">
+
+        <!-- Sample AdMob app ID: ca-app-pub-8417921365576498~4503958429 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8417921365576498~4503958429"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
+            android:hardwareAccelerated="true"
             android:theme="@style/Theme.AlarmProject" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

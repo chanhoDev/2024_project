@@ -1,0 +1,5 @@
+package com.chanho.alarm
+
+enum class TimeType {
+    START_YEAR, START_MONTH, START_DAY, END_YEAR, END_MONTH, END_DAY, AMPM_ALLDAY, AMPM, HOUR, MINUTE, YEAR, MONTH, DAY, TIME
+}

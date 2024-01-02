@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="application_name">waplat</string>
+    <string name="application_version">버전 %s(%d)</string>
+    <string name="confirm">확인했어요</string>
+    <string name="button_collapse">접기</string>
+    <string name="button_spread">펼치기</string>
+    <string name="gender_male">남자</string>
+    <string name="gender_female">여자</string>
+    <string name="withdrawaled_user">탈퇴한 회원</string>
+    <string-array name="AMPM_ALLDAY">
+        <item>종일</item>
+        <item>오전</item>
+        <item>오후</item>
+    </string-array>
+    <string-array name="AMPM">
+        <item>오전</item>
+        <item>오후</item>
+    </string-array>
+    <string-array name="HOUR">
+        <item>01</item>
+        <item>02</item>
+        <item>03</item>
+        <item>04</item>
+        <item>05</item>
+        <item>06</item>
+        <item>07</item>
+        <item>08</item>
+        <item>09</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+    <string-array name="MINUTE">
+        <item>00</item>
+        <item>30</item>
+    </string-array>
+    <string-array name="CATEGORY">
+        <item>생일</item>
+        <item>제사</item>
+        <item>기념일</item>
+        <item>가족</item>
+        <item>친구</item>
+        <item>모임</item>
+        <item>직접 입력</item>
+    </string-array>
+
+    <string name="title_home">홈</string>
+    <string name="title_reports">리포트</string>
+    <string name="title_front_desk">안내데스크</string>
+    <string name="title_my_service">서비스</string>
+    <string name="medication_title">복약알림</string>
+    <string name="medication_register_title">복약 등록하기</string>
+    <string name="medication_alarm_title">잊지마세요! 약 먹기</string>
+    <string name="common_allday">종일</string>
+    <string name="common_am">오전</string>
+    <string name="common_pm">오후</string>
+    <string name="common_time_with_ampm">%s %02d:%02d</string>
+
+    <string name="bottom_dialog_hour">%s 시</string>
+    <string name="bottom_dialog_minute">%s 분</string>
+    <string name="bottom_dialog_year">%s년</string>
+    <string name="bottom_dialog_month">%s월</string>
+    <string name="bottom_dialog_day">%s일</string>
+    <string name="close">닫기</string>
+
+    <string name="help">도움말</string>
+
+    <string name="radio_playing">재생</string>
+    <string name="radio_stop">정지</string>
+
+    <string name="alarm_title_example">오후 12:00</string>
+    <string name="alarm_medication_title">잊지마세요! 약 먹기</string>
+    <string-array name="heavenlyStems">
+        <item>경</item>
+        <item>신</item>
+        <item>임</item>
+        <item>계</item>
+        <item>갑</item>
+        <item>을</item>
+        <item>병</item>
+        <item>정</item>
+        <item>무</item>
+        <item>기</item>
+    </string-array>
+    <string-array name="earthlyBranches">
+        <item>산</item>
+        <item>유</item>
+        <item>술</item>
+        <item>해</item>
+        <item>자</item>
+        <item>축</item>
+        <item>안</item>
+        <item>묘</item>
+        <item>진</item>
+        <item>사</item>
+        <item>오</item>
+        <item>미</item>
+    </string-array>
+    <string name="common_show">보기</string>
+    <string name="common_close">닫기</string>
+    <string name="common_go_top_btn">맨 위로 가기</string>
+    <string name="common_select">선택하기</string>
+
+    <string name="year_title">연도를 선택해 주세요.</string>
+    <string name="month_title">월을 선택해 주세요.</string>
+    <string name="day_title">일을 선택해 주세요.</string>
+    <string name="line_value">\\n</string>
+    <string name="line_separator">line.separator</string>
+    <string name="date_format">%s-%s-%s</string>
+    <string name="gender_ko_male_name">남</string>
+    <string name="gender_ko_female_name">여</string>
+    <string name="package_status_state_active">이용 중</string>
+    <string name="package_status_purchased_expired">이용 만료</string>
+    <string name="package_status_cancel">신청 취소</string>
+    <string name="package_status_purchase">이용 중</string>
+    <string name="package_status_consumed">신청 완료</string>
+    <string name="package_status_completed">신청 확정</string>
+    <string name="product_pay_status_success">결제 완료</string>
+    <string name="product_pay_status_fail">결제 실패</string>
+    <string name="product_pay_status_refund">환불 완료</string>
+
+    <string name="system_permission_title">이용하려면 권한이\n필요해요</string>
+    <string name="system_permission_sub_title">더 쉬운 휴대폰 이용을 위해\n딱 한 번만 허용해 주세요</string>
+    <string name="system_permission_for_other_app_appear_sub_title">서비스를 더 원활하게 이용하기 위해\n딱 한 번만 허용해 주세요</string>
+    <string name="system_permission_for_other_app_appear_next_time_title">다음에 하기</string>
+
+    <string name="system_permission_how_to_use_title">이용 권한 허용 방법</string>
+    <string name="system_permission_show_btn">보기</string>
+    <string name="system_permission_close_btn">닫기</string>
+    <string name="system_permission_btn">허용하기</string>
+    <string name="system_permission_toolbar_title">시스템 설정 권한</string>
+    <string name="system_permission_for_other_app_appear_toolbar_title">다음 앱 위에 표시</string>
+
+
+    <!-- Permission   -->
+    <string name="permission_title">접근 권한을\n허용해 주세요</string>
+    <string name="permission_desc"><b>허용하기</b>를 누르면 나타나는 창에서\n<b>허용</b>을 눌러주세요.</string>
+
+    <string name="permission_again_title">허용하지 않은\n접근 권한이 있어요</string>
+    <string name="permission_again_desc"><b>다시 허용하기</b>를 눌러\n모든 접근 권한을 <b>허용</b>해 주세요.</string>
+
+    <string name="permission_required">필수 접근 권한</string>
+    <string name="permission_phone">전화</string>
+    <string name="permission_phone_desc">휴대폰 정보 확인하기</string>
+    <string name="permission_file_media">파일 및 미디어</string>
+    <string name="permission_file_media_desc">라디오 듣기</string>
+
+    <string name="permission_optional">선택 접근 권한</string>
+    <string name="permission_setting">시스템 설정</string>
+    <string name="permission_setting_desc">휴대폰 환경 설정하기</string>
+
+    <string name="permission_grant">허용하기</string>
+    <string name="permission_grant_again">다시 허용하기</string>
+    <string name="permission_grant_yourself">직접 허용하기</string>
+
+    <string name="permission_should_be_granted">허용해야 하는 접근 권한</string>
+
+    <string name="permission_grant_all_title">모든 접근 권한을\n허용해 주세요</string>
+    <string name="permission_grant_all_desc">아래 방법으로 <b>접근 권한을 모두\n허용</b>하면 와플랫을 이용할 수 있어요.</string>
+    <string name="permission_usage">앱 접근 권한 허용 방법</string>
+
+    <string name="permission_usage_step1">1. <b>권한</b>을 선택해 주세요.</string>
+    <string name="permission_usage_step2">2. <b>허용해야 하는 접근 권한</b>을\n선택해 주세요.</string>
+    <string name="permission_usage_step3">3. <b>허용</b>을 선택하여 허용해야 하는\n접근 권한을 모두 허용해 주세요.</string>
+    <string name="permission_usage_step4">4. 와플랫을 <b>다시 실행</b>해 주세요.</string>
+
+    <string name="permission_usage_show">보기</string>
+    <string name="permission_usage_close">닫기</string>
+
+    <string name="alarm_pulse_check">혈압체크</string>
+    <string name="alarm_report">리포트</string>
+    <string name="alarm_warak">와락</string>
+    <string name="alarm_emocog">기억검사</string>
+    <string name="alarm_radio">라디오</string>
+
+    <string name="service_type_service_terms">SERVICE_TERMS</string>
+    <string name="service_type_promotional_information">PROMOTIONAL_INFORMATION</string>
+    <string name="service_type_personal_info_collection">PERSONAL_INFO_COLLECTION</string>
+    <string name="service_type_third_party_disclosure">THIRD_PARTY_DISCLOSURE</string>
+    <string name="service_id_gostop">s000001</string>
+    <string name="service_id_fortune">s000002</string>
+    <string name="service_id_schedule">s000003</string>
+    <string name="service_id_medication">s000004</string>
+    <string name="service_id_help_call">s000005</string>
+    <string name="service_id_radio">s000006</string>
+    <string name="service_id_cogscreen">s000007</string>
+    <string name="service_id_cogscreen_report_help">s000007-1</string>
+    <string name="service_id_pulse_check">s000008</string>
+
+    <string name="package_id_warak">wa000001</string>
+    <string name="package_id_radio">wa000002</string>
+    <string name="package_id_emocog_check">ck000002</string>
+    <string name="package_id_pulse_check">ck000003</string>
+
+
+    <string name="exception_network_not_available">인터넷이 연결되었는지 확인해 주세요.</string>
+    <string name="exception_network_in_progress">인터넷이 붕안정합니다. 다시 시도해 주세요.</string>
+    <string name="exception_failure_response">오류가 발생하였습니다. 다시 시도해 주세요.</string>
+    <string name="exception_failure_auth">로그인 정보가 올바르지 않습니다.\n종료 후 다시 실행해 주세요.</string>
+    <string name="exception_failure_will_service">제공 예정인 서비스입니다. 조금만 기다려 주세요.</string>
+
+    <string name="emocog_title"><Data><![CDATA[<b>%s를 종료할까요?</b>]]></Data></string>
+    <string name="emocog_sub_title"><Data><![CDATA[지금 종료하면<br>검사 결과에 영향을 줄 수 있어요.]]></Data></string>
+    <string name="emocog_sub_title2"><Data><![CDATA[종료하더라도<br>진행한 단계부터 이어할 수 있습니다.]]></Data></string>
+    <string name="emocog_close">종료하기</string>
+    <string name="emocog_continue">계속 진행하기</string>
+    <string name="report_help_title">기억검사리포트 도움말</string>
+    <string name="report_care_display_title">케어리포트</string>
+    <string name="report_emocog_display_title">기억검사 리포트</string>
+    <string name="report_warak_display_title">와락(樂) 리포트</string>
+
+
+    <string name="emocog_confirm">확인하기</string>
+    <string name="emocog_confirm_later">다음에 이용하기</string>
+    <string name="emocog_report_n_days_later_title"><Data><![CDATA[<font color=\"#E31E87\">%s</font>일 뒤에 이용해 주세요]]></Data></string>
+    <string name="emocog_report_n_days_later_sub_title"><Data><![CDATA[기억검사는 <b>최소 90일 간격</b>으로<br>이용하는 것을 권장하고 있어요.]]></Data></string>
+    <string name="emocog_report_n_days_later_sub_title2"><Data><![CDATA[<b>%s</b>에 다시 이용해 주세요.]]></Data></string>
+    <string name="emocog_report_n_days_later_sub_title3">마지막 이용일</string>
+
+
+    <string name="emocog_report_making_title"><Data><![CDATA[리포트를 작성하고 있어요]]></Data></string>
+    <string name="emocog_report_making_sub_title"><Data><![CDATA[리포트 작성이 완료되면<br>알림을 통해 전달해 드릴게요.]]></Data></string>
+    <string name="emocog_report_making_sub_title2"><Data><![CDATA[리포트 전달에는 최대 3일이<br>소요됩니다.]]></Data></string>
+
+
+</resources>
