@@ -13,6 +13,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.room.Room
 import com.chanho.common.Constants
+import com.chanho.common.PrefHelper
 import com.chanho.common.data.AlarmDatabase
 import com.chanho.common.data.AlarmEntity
 import com.chanho.project.databinding.ActivityMainBinding
@@ -30,4 +31,8 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 @HiltAndroidApp
 class AlarmApplication : Application(){
+    override fun onCreate() {
+        super.onCreate()
+        PrefHelper.init(this)
+    }
 }

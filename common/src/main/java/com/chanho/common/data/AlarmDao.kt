@@ -13,7 +13,7 @@ interface AlarmDao {
     fun getAll():List<AlarmEntity>?
 
     @Query("SELECT * FROM alarmentity WHERE alarm_code IN (:alarmCode) LIMIT 1")
-    fun loadByAlarmCode(alarmCode:Int):AlarmEntity
+    fun loadByAlarmCode(alarmCode:Int):AlarmEntity?
 
     @Query("SELECT EXISTS(SELECT * FROM alarmentity WHERE alarm_time IN (:alarmTime))")
     fun isExistTime(alarmTime:String):Boolean

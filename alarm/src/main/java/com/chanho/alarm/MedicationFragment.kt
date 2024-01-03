@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.chanho.alarm.databinding.FragmentMedicationBinding
 import com.chanho.common.AlarmFunctions.callAlarm
 import com.chanho.common.AlarmFunctions.cancelAlarm
+import com.chanho.common.Constants
 import com.chanho.common.Constants.REQUEST_ALARM_TIME
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,18 +33,13 @@ class MedicationFragment : Fragment() {
         } else {
             _binding.medicationEmptyLayout.visibility = View.GONE
             it.forEach { medicationItem ->
-//                val time =
-//                    getString(
-//                        R.string.alarm_time_format,
-//                        medicationItem.alarmTime
-//                    )
-//                callAlarm(
-//                    requireContext(),
-//                    alarmPopupType = Constants.AlarmPopupType.MEDICATION,
-//                    time = time,
-//                    content = getString(com.chanho.common.R.string.medication_alarm_title),
-//                    alarmCode = medicationItem.medicineScheduleSeq
-//                )
+                val time = getString(R.string.alarm_time_format, medicationItem.alarmTime)
+                callAlarm(
+                    requireContext(),
+                    time = time,
+                    content = getString(com.chanho.common.R.string.medication_alarm_title),
+                    alarmCode = medicationItem.alarmCode
+                )
             }
         }
         _adapter.submitList(it)
