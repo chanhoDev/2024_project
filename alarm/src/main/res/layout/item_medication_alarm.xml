@@ -11,18 +11,16 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:padding="20dp">
-
         <TextView
-            android:id="@+id/ampm_text"
-            style="@style/body6"
+            android:id="@+id/time_content"
+            style="@style/title7"
+            android:textColor="@color/grey_700"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:text="오전"
-            android:textColor="@color/grey_700"
-            app:layout_constraintBottom_toBottomOf="@id/time_text"
-            app:layout_constraintStart_toStartOf="parent" />
-
+            android:text="컨텐츠"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/time_text"/>
         <TextView
             android:id="@+id/time_text"
             style="@style/title7"
@@ -32,8 +30,8 @@
             android:text="9시 30분"
             android:textColor="@color/grey_700"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/ampm_text"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/time_content" />
 
         <LinearLayout
             android:layout_width="wrap_content"

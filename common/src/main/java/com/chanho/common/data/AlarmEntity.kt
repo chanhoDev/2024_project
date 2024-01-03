@@ -11,8 +11,6 @@ data class AlarmEntity(
     val id:Int=0,
     @ColumnInfo(name = "alarm_code")
     val alarmCode:Int,
-    @ColumnInfo(name = "popup_type")
-    val popupType: Constants.AlarmPopupType,
     @ColumnInfo(name = "alarm_time")
     val alarmTime:String,
     @ColumnInfo(name = "alarm_content")

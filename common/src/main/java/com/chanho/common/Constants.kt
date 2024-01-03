@@ -16,6 +16,7 @@ object Constants {
     const val PURCHASED_WAPLAT_PACKAGE = "purchasedWaplatPackage"
     const val PURCHASED_PACKAGE_ID = "purchasedPackageId"
     const val PURCHASED_PACKAGE_SEQ = "purchasedPackageSeq"
+    const val ALARM_CHANNEL = "alarm_channel"
     const val PRESENT_PURCHASER = "presentPurchaser"
 
     const val REQUEST_ALARM_TIME = "request_alarm_time"

@@ -83,25 +83,24 @@ class MainActivity : AppCompatActivity() {
                 || super.onSupportNavigateUp()
     }
 
-    private fun setDatabase() {
-        val alarmCode = database.AlarmDao().getAll().takeIf { !it.isNullOrEmpty() }?.let {
-            it.last().id + 1
-        } ?: run {
-            1
-        }
-
-        lifecycleScope.launch {
-            database.AlarmDao().insertAll(
-                AlarmEntity(
-                    popupType = Constants.AlarmPopupType.MEDICATION,
-                    alarmTime = "2024-01-02 16:29:00",
-                    alarmContent = "테스트",
-                    alarmCode = alarmCode
-                )
-            )
-        }
-        Log.e("setDatabaseResult", alarmCode.toString())
-    }
+//    private fun setDatabase() {
+//        val alarmCode = database.AlarmDao().getAll().takeIf { !it.isNullOrEmpty() }?.let {
+//            it.last().id + 1
+//        } ?: run {
+//            1
+//        }
+//
+//        lifecycleScope.launch {
+//            database.AlarmDao().insertAll(
+//                AlarmEntity(
+//                    alarmTime = "2024-01-02 16:29:00",
+//                    alarmContent = "테스트",
+//                    alarmCode = alarmCode
+//                )
+//            )
+//        }
+//        Log.e("setDatabaseResult", alarmCode.toString())
+//    }
 
     private fun loadRewardAdd() {
         var adRequest = AdRequest.Builder().build()

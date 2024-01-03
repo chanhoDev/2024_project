@@ -61,7 +61,7 @@
     <string name="alarm_dialog_title_hour">시간을 선택해 주세요.</string>
     <string name="alarm_dialog_title_minute">분을 선택해 주세요.</string>
     <string name="alarm_schedule_title">미영님 만나는 날</string>
-    <string name="alarm_time_format">2000-00-00 %02d:%02d:00</string>
+    <string name="alarm_time_format">2000-00-00 %s</string>
     <string name="alarm_time_delete">복약 시간이 삭제 되었습니다.</string>
     <string name="alarm_permission_ok">"권한 설정 "</string>
     <string name="alarm_permission_cancel">권한 설정 취소</string>

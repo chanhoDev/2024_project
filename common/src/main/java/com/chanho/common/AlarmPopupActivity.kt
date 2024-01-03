@@ -5,16 +5,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.chanho.common.data.AlarmDao
 import com.chanho.common.databinding.ActivityAlarmPopupBinding
 import java.text.ParseException
 import java.util.Calendar
 import java.util.Date
+import javax.inject.Inject
 
-class AlarmPopupActivity : AppCompatActivity() {
+class AlarmPopupActivity @Inject constructor(
+    private val alarmDao: AlarmDao
+) : AppCompatActivity() {
 
     var isAlarmFirst: Boolean = true
-        private set
-    var alarmType: String? = ""
         private set
     var content: String = ""
         private set
@@ -37,16 +39,7 @@ class AlarmPopupActivity : AppCompatActivity() {
 
     fun setData(context: Context, bundle: Bundle) {
         isAlarmFirst = bundle.getBoolean(Constants.IS_ALARM_FIRST, true)
-        alarmType = bundle.getString(Constants.ALARM_TYPE)
-        content = if (bundle.getString(Constants.CONTENT).isNullOrEmpty()) {
-            if (alarmType == Constants.AlarmPopupType.MEDICATION.typeName) {
-                context.getString(R.string.medication_alarm_title)
-            } else {
-                ""
-            }
-        } else {
-            bundle.getString(Constants.CONTENT).toString()
-        }
+        content = bundle.getString(Constants.CONTENT).toString()
         alarmTime = bundle.getString(Constants.ALARM_TIME)
         alarmCode = bundle.getInt(Constants.ALARM_CODE, -1)
     }
@@ -83,59 +76,36 @@ class AlarmPopupActivity : AppCompatActivity() {
                     }
 
                     // 복약 알림인경우 복약알림 반복등록함
-                    Log.d("AlarmPopupActivity", "alarmType = ${alarmType} ")
-                    when (Constants.AlarmPopupType.getAlarmPopupType(alarmType)) {
-                        Constants.AlarmPopupType.MEDICATION -> {
-                            Log.d(
-                                "AlarmPopupActivity",
-                                "AlarmPopupActivity MEDICATION 클릭 "
-                            )
-                            if (AlarmFunctions.getTimeAlarmCode(Constants.AlarmPopupType.getAlarmPopupType(alarmType), alarmTime?:"").isNotEmpty()) {
-                                AlarmFunctions.cancelAlarm(
-                                    this@AlarmPopupActivity,
-                                    Constants.AlarmPopupType.getAlarmPopupType(alarmType),
-                                    Util.dateFormat.format(calendar.time),
-                                    alarmCode,
-                                    isRepeat = true
-                                )
-                                val nowCalendar = Calendar.getInstance().apply {
-                                    timeInMillis = System.currentTimeMillis()
-                                    set(Calendar.AM_PM, calendar.get(Calendar.AM_PM))
-                                    set(Calendar.HOUR, calendar.get(Calendar.HOUR))
-                                    set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
-                                    set(Calendar.SECOND, calendar.get(Calendar.SECOND))
-                                }
-                                AlarmFunctions.setAlarmManager(
-                                    this@AlarmPopupActivity,
-                                    Util.dateFormat.format(nowCalendar.time),
-                                    Constants.AlarmPopupType.getAlarmPopupType(alarmType),
-                                    alarmCode,
-                                    content,
-                                    isAlarmFirst = true
-                                )
-                            } else {
-                                AlarmFunctions.cancelAlarm(
-                                    this@AlarmPopupActivity,
-                                    Constants.AlarmPopupType.getAlarmPopupType(alarmType),
-                                    Util.dateFormat.format(calendar.time),
-                                    alarmCode,
-                                    isRepeat = false
-                                )
-                            }
+                    Log.d(
+                        "AlarmPopupActivity",
+                        "AlarmPopupActivity MEDICATION 클릭 "
+                    )
+                    if (alarmDao.loadByAlarmCode(alarmCode)!=null) {
+                        AlarmFunctions.cancelAlarm(
+                            this@AlarmPopupActivity,
+                            Util.dateFormat.format(calendar.time),
+                            alarmCode,
+                        )
+                        val nowCalendar = Calendar.getInstance().apply {
+                            timeInMillis = System.currentTimeMillis()
+                            set(Calendar.AM_PM, calendar.get(Calendar.AM_PM))
+                            set(Calendar.HOUR, calendar.get(Calendar.HOUR))
+                            set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
+                            set(Calendar.SECOND, calendar.get(Calendar.SECOND))
                         }
-                        Constants.AlarmPopupType.SCHEDULE -> {
-                            Log.d(
-                                "AlarmPopupActivity",
-                                "AlarmPopupActivity SCHEDULE 클릭 "
-                            )
-                            AlarmFunctions.cancelAlarm(
-                                this@AlarmPopupActivity,
-                                Constants.AlarmPopupType.getAlarmPopupType(alarmType),
-                                Util.dateFormat.format(calendar.time),
-                                alarmCode,
-                                isRepeat = false
-                            )
-                        }
+                        AlarmFunctions.setAlarmManager(
+                            this@AlarmPopupActivity,
+                            Util.dateFormat.format(nowCalendar.time),
+                            alarmCode,
+                            content,
+                            isAlarmFirst = true
+                        )
+                    } else {
+                        AlarmFunctions.cancelAlarm(
+                            this@AlarmPopupActivity,
+                            Util.dateFormat.format(calendar.time),
+                            alarmCode,
+                        )
                     }
                 }
                 finish()
@@ -149,22 +119,9 @@ class AlarmPopupActivity : AppCompatActivity() {
             setData(this, it)
             setAlarmTime(this)
         }
-
-//        Handler(Looper.getMainLooper())
-//            .postDelayed(
-//                {
-//                    Util.setAlarmMusic(this@AlarmPopupActivity)
-//                }, 200
-//            )
     }
 
     override fun onStart() {
         super.onStart()
-//        Handler(Looper.getMainLooper())
-//            .postDelayed(
-//                {
-//                    Util.setAlarmMusic(this@AlarmPopupActivity)
-//                }, 200
-//            )
     }
 }

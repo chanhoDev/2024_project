@@ -9,16 +9,20 @@ import android.os.Bundle
 import android.util.Log
 import com.chanho.common.Constants.ALARM_CODE
 import com.chanho.common.Constants.ALARM_TIME
-import com.chanho.common.Constants.ALARM_TYPE
 import com.chanho.common.Constants.CONTENT
 import com.chanho.common.Constants.IS_ALARM_FIRST
-import com.chanho.common.Constants.TIME
+import com.chanho.common.data.AlarmDao
+import com.chanho.common.data.AlarmDatabase
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.ParseException
 import java.util.Calendar
 import java.util.Date
+import javax.inject.Inject
 
+@AndroidEntryPoint
+class AlarmReceiver(): BroadcastReceiver() {
 
-class AlarmReceiver : BroadcastReceiver() {
+    @Inject lateinit var alarmDao: AlarmDao
 
     var content: String = ""
         private set
@@ -36,23 +40,10 @@ class AlarmReceiver : BroadcastReceiver() {
         Log.d("TAG", "onReceive 알림이 들어옴 ${intent.action.toString()}")
         isContinueAlarmReceiver = false
         val isAlarmFirst = intent.getBooleanExtra(IS_ALARM_FIRST, true)
-        val alarmType = intent.getStringExtra(ALARM_TYPE)
-        content = if (intent.getStringExtra(CONTENT).isNullOrEmpty()) {
-            if (alarmType == Constants.AlarmPopupType.MEDICATION.typeName) {
-                context.getString(R.string.medication_alarm_title)
-            } else {
-                ""
-            }
-        } else {
-            intent.getStringExtra(CONTENT).toString()
-        }
-
-        newAlarmTime = intent.getStringExtra(ALARM_TIME)
-        legacyAlarmTime = intent.getStringExtra(TIME)
-        alarmTime = migrateLegacyTimeToNewAlarmTime(legacyAlarmTime, newAlarmTime)
+        content = intent.getStringExtra(CONTENT).toString()
+        alarmTime = intent.getStringExtra(ALARM_TIME)
         val alarmCode = intent.getIntExtra(ALARM_CODE, 0)
 
-        Log.d("TAG", "alarmType =${alarmType}")
         Log.d(
             "TAG",
             "intent.getStringExtra(CONTENT).isNullOrEmpty() =${
@@ -99,10 +90,8 @@ class AlarmReceiver : BroadcastReceiver() {
 
         AlarmFunctions.cancelAlarm(
             context,
-            Constants.AlarmPopupType.getAlarmPopupType(alarmType),
             Util.dateFormat.format(calendar.time),
-            alarmCode,
-            isRepeat = true
+            alarmCode
         )
 
         val nowCalendar = Calendar.getInstance().apply {
@@ -112,52 +101,29 @@ class AlarmReceiver : BroadcastReceiver() {
             set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
             set(Calendar.SECOND, calendar.get(Calendar.SECOND))
         }
-        if (AlarmFunctions.getTimeAlarmCode(
-                Constants.AlarmPopupType.getAlarmPopupType(alarmType),
-                alarmTime ?: ""
-            ).isNotEmpty()
-        ) {
+        if (alarmDao.loadByAlarmCode(alarmCode)!=null) {
             if (isAlarmFirst) {
                 AlarmFunctions.setAlarmManager(
                     context,
                     Util.dateFormat.format(nowCalendar.time),
-                    Constants.AlarmPopupType.getAlarmPopupType(alarmType),
                     alarmCode,
                     content,
                     isAlarmFirst = false
                 )
             } else {
-                if (alarmType == Constants.AlarmPopupType.MEDICATION.typeName) {
-                    AlarmFunctions.setAlarmManager(
-                        context,
-                        Util.dateFormat.format(nowCalendar.time),
-                        Constants.AlarmPopupType.getAlarmPopupType(alarmType),
-                        alarmCode,
-                        content,
-                        isAlarmFirst = true
-                    )
-                }
+                AlarmFunctions.setAlarmManager(
+                    context,
+                    Util.dateFormat.format(nowCalendar.time),
+                    alarmCode,
+                    content,
+                    isAlarmFirst = true
+                )
             }
-
-//            if (Settings.canDrawOverlays(context)) {
-//                //전체 알림
-//                navigateToAlarmPopupActivity(
-//                    context,
-//                    content,
-//                    alarmType,
-//                    alarmTime,
-//                    isAlarmFirst,
-//                    alarmCode
-//                )
-//            } else {
-//
-//            }
             setNotification(
                 context,
                 title = content,
                 body = formatTime,
                 alarmTime = alarmTime ?: "",
-                alarmType = alarmType,
                 isAlarmFirst = isAlarmFirst,
                 alarmCode = alarmCode
             )
@@ -180,25 +146,23 @@ class AlarmReceiver : BroadcastReceiver() {
         title: String,
         body: String,
         alarmTime: String,
-        alarmType: String?,
         isAlarmFirst: Boolean,
         alarmCode: Int
     ) {
         val notificationManager: NotificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        notificationManager.cancel(alarmCode)
-
+//        notificationManager.cancel(alarmCode)
 
         val bundle = Bundle().apply {
             putString(CONTENT, title)
             putString(ALARM_TIME, alarmTime)
-            putString(ALARM_TYPE, alarmType)
             putBoolean(IS_ALARM_FIRST, isAlarmFirst)
             putInt(ALARM_CODE, alarmCode)
         }
 
-        val fullScreenIntent = Intent(context.applicationContext, AlarmPopupActivity::class.java).apply {
+        val fullScreenIntent =
+            Intent(context.applicationContext, AlarmPopupActivity::class.java).apply {
                 putExtras(bundle)
             }
 
@@ -223,7 +187,9 @@ class AlarmReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        CommonNotification.createNotificationForAlarmChannel(alarmCode.toString(), notificationManager)
+        CommonNotification.createNotificationForAlarmChannel(
+            notificationManager
+        )
         CommonNotification.deliverNotificationForAlarm(
             context,
             alarmCode,
@@ -232,25 +198,5 @@ class AlarmReceiver : BroadcastReceiver() {
             contentPendingIntent = contentPendingIntent,
             fullScreenPendingIntent = fullScreenPendingIntent,
         )
-    }
-
-    private fun navigateToAlarmPopupActivity(
-        context: Context,
-        content: String?,
-        alarmType: String?,
-        alarmTime: String?,
-        isAlarmFirst: Boolean,
-        alarmCode: Int
-    ) {
-        val alarmIntent = Intent(context.applicationContext, AlarmPopupActivity::class.java)
-        alarmIntent.apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(CONTENT, content)
-            putExtra(ALARM_TYPE, alarmType)
-            putExtra(ALARM_TIME, alarmTime)
-            putExtra(IS_ALARM_FIRST, isAlarmFirst)
-            putExtra(ALARM_CODE, alarmCode)
-        }
-        context.startActivity(alarmIntent)
     }
 }
