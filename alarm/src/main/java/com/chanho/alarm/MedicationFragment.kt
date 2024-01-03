@@ -20,7 +20,6 @@ import com.chanho.common.AlarmFunctions.cancelAlarm
 import com.chanho.common.Constants
 import com.chanho.common.Constants.REQUEST_ALARM_TIME
 import com.chanho.common.Util.getUserNameLast2Character
-
 class MedicationFragment : Fragment() {
     private lateinit var _binding: FragmentMedicationBinding
     private lateinit var _viewModel: MedicationAlarmViewModel

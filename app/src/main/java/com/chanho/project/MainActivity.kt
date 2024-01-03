@@ -3,13 +3,14 @@ package com.chanho.project
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
+import com.chanho.common.Constants
+import com.chanho.common.data.AlarmDatabase
+import com.chanho.common.data.AlarmEntity
 import com.chanho.project.databinding.ActivityMainBinding
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdListener
@@ -21,7 +22,11 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -29,7 +34,8 @@ class MainActivity : AppCompatActivity() {
     private var rewardedAd: RewardedAd? = null
     private var mInterstitialAd: InterstitialAd? = null
     private final var TAG = "MainActivity"
-
+    @Inject
+    lateinit var database: AlarmDatabase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 //        val navController = findNavController(R.id.nav_host_fragment_content_main)
 
         MobileAds.initialize(this) {
-            Toast.makeText(this,"ad mob 테스트입니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "ad mob 테스트입니다.", Toast.LENGTH_SHORT).show()
         }
         loadBaaner()
 
@@ -71,27 +77,50 @@ class MainActivity : AppCompatActivity() {
 //        loadRewardAdd()
 
     }
-
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
     }
 
-    private fun loadRewardAdd(){
-        var adRequest = AdRequest.Builder().build()
-        RewardedAd.load(this,"ca-app-pub-3940256099942544/5224354917", adRequest, object : RewardedAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                Log.d(TAG, adError.toString())
-                rewardedAd = null
-            }
+    private fun setDatabase() {
+        val alarmCode = database.AlarmDao().getAll().takeIf { !it.isNullOrEmpty() }?.let {
+            it.last().id + 1
+        } ?: run {
+            1
+        }
 
-            override fun onAdLoaded(ad: RewardedAd) {
-                Log.d(TAG, "Ad was loaded.")
-                rewardedAd = ad
-            }
-        })
-        rewardedAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
+        lifecycleScope.launch {
+            database.AlarmDao().insertAll(
+                AlarmEntity(
+                    popupType = Constants.AlarmPopupType.MEDICATION,
+                    alarmTime = "2024-01-02 16:29:00",
+                    alarmContent = "테스트",
+                    alarmCode = alarmCode
+                )
+            )
+        }
+        Log.e("setDatabaseResult", alarmCode.toString())
+    }
+
+    private fun loadRewardAdd() {
+        var adRequest = AdRequest.Builder().build()
+        RewardedAd.load(
+            this,
+            "ca-app-pub-3940256099942544/5224354917",
+            adRequest,
+            object : RewardedAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(TAG, adError.toString())
+                    rewardedAd = null
+                }
+
+                override fun onAdLoaded(ad: RewardedAd) {
+                    Log.d(TAG, "Ad was loaded.")
+                    rewardedAd = ad
+                }
+            })
+        rewardedAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdClicked() {
                 // Called when a click is recorded for an ad.
                 Log.d(TAG, "Ad was clicked.")
