@@ -4,87 +4,46 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.chanho.common.SingleLiveEvent
+import com.chanho.common.data.AlarmDao
+import com.chanho.common.data.AlarmDatabase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MedicationAlarmViewModel constructor(
-    private val application: Application
+@HiltViewModel
+class MedicationAlarmViewModel @Inject constructor(
+    private val application: Application,
+    private val alarmDao: AlarmDao
 ) : AndroidViewModel(application) {
-    private val _medicationList = MutableLiveData<List<MedicationAlarmTimeModel>>()
-    val medicationList: LiveData<List<MedicationAlarmTimeModel>> = _medicationList
+    private val _medicationList = MutableLiveData<List<AlarmTimeModel>>()
+    val medicationList: LiveData<List<AlarmTimeModel>> = _medicationList
 
-    private val _deleteAlarmItem = SingleLiveEvent<MedicationAlarmTimeModel>()
+    private val _deleteAlarmItem = SingleLiveEvent<AlarmTimeModel>()
     val deleteAlarmItem = _deleteAlarmItem
 
-    init {
-//        _userInfo.value =
-//            Gson().fromJson(PrefHelper[PrefHelper.KEY_USER_INFO, ""], UserInfo::class.java)
-    }
 
     fun callAlarmList() {
-        _medicationList.value = mutableListOf(
-            MedicationAlarmTimeModel(1,10,20),
-            MedicationAlarmTimeModel(2,10,22),
-            MedicationAlarmTimeModel(3,13,22),
-            MedicationAlarmTimeModel(4,15,22)
-        )
-//        viewModelScope.launch {
-//            _medicationAlarmUseCase.getMedicationList(
-//                _userInfo.value!!.memberNo
-//            ).collect { response ->
-//                when (response) {
-//                    is ApiResult.Empty -> {
-//                        _medicationList.value = emptyList()
-//                    }
-//                    is ApiResult.Fail.Error -> {
-//                       setError(response.toString())
-//                    }
-//                    is ApiResult.Fail.Exception -> {
-//                        setError(response.toString())
-//                    }
-//                    is ApiResult.Loading -> {}
-//                    is ApiResult.Success -> {
-//                        if(response.data.header.isSuccessful){
-//                            response.data.medicineScheduleList?.let { item ->
-//                                _medicationList.value = item
-//                            } ?: run {
-//                                _medicationList.value = emptyList()
-//                            }
-//                        }else{
-//                            setError(response.toString())
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        viewModelScope.launch {
+            val alarmList = alarmDao.getAll()
+            alarmList?.sortedBy { it.alarmTime }?.map {
+                AlarmTimeModel(
+                    alarmCode = it.alarmCode,
+                    alarmTime = it.alarmTime,
+                    alarmContent = it.alarmContent
+                )
+            }?.let { alarmTimeModelList ->
+                _medicationList.value = alarmTimeModelList
+            }
+        }
     }
 
-    fun removeAlarmItem(item: MedicationAlarmTimeModel) {
-        _medicationList.value = _medicationList.value?.filter { it.medicineScheduleSeq !=item.medicineScheduleSeq }
-//        viewModelScope.launch {
-//            _medicationAlarmUseCase.deleteMedication(
-//                userId = _userInfo.value!!.memberNo, medicineScheduleSeq = item.medicineScheduleSeq
-//            ).collect { response ->
-//                Log.e("removeAlarmItem ", response.toString())
-//                when (response) {
-//                    is ApiResult.Empty -> {}
-//                    is ApiResult.Fail.Error -> {
-//                        setError(response.toString())
-//                    }
-//                    is ApiResult.Fail.Exception -> {
-//                        setError(response.toString())
-//                    }
-//                    is ApiResult.Loading -> {}
-//                    is ApiResult.Success -> {
-//                        if(response.data.header.isSuccessful){
-//                            callAlarmList()
-//                            _deleteAlarmItem.value = item
-//                        }else{
-//                            setError(response.toString())
-//                        }
-//
-//                    }
-//                }
-//            }
-//        }
+    fun removeAlarmItem(alarmTimeModel: AlarmTimeModel) {
+        val deleteResult = alarmDao.delete(alarmTimeModel.alarmTime)
+        if(deleteResult==1){
+            _deleteAlarmItem.value = alarmTimeModel
+            callAlarmList()
+        }
     }
 }

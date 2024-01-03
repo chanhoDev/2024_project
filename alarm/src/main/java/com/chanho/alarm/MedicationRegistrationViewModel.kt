@@ -1,15 +1,22 @@
 package com.chanho.alarm
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.chanho.common.SingleLiveEvent
 import com.chanho.common.Util
+import com.chanho.common.data.AlarmDao
+import com.chanho.common.data.AlarmEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Calendar
+import javax.inject.Inject
 
-class MedicationRegistrationViewModel  constructor(
-    private val application: Application
+@HiltViewModel
+class MedicationRegistrationViewModel  @Inject constructor(
+    private val application: Application,
+    private val alarmDao: AlarmDao
 ) : AndroidViewModel(application) {
 
     private val _ampmResult = MutableLiveData<String>()
@@ -137,7 +144,6 @@ class MedicationRegistrationViewModel  constructor(
             return
         }
         addAlarmTime("$ampm $hour:$minute")
-//        _onRegistrationClick.value = "$ampm $hour:$minute"
     }
 
     private fun convertToOptionModelList(
@@ -288,35 +294,24 @@ class MedicationRegistrationViewModel  constructor(
         val convertTo24Time = Util.dateFormate_24_hour.format(convertToAmpmTime).split(":")
         val hour = convertTo24Time[0].toInt()
         val minute = convertTo24Time[1].toInt()
-
-//        viewModelScope.launch {
-//            _medicationAlarmUseCase.registerMedication(
-//                userId = _userInfo.memberNo,
-//                registerMedicationRequest = RegisterMedicationRequest(
-//                    hour = hour,
-//                    minute = minute
-//                )
-//            ).collect { response ->
-//                when (response) {
-//                    is ApiResult.Empty -> {
-//                    }
-//                    is ApiResult.Fail.Error -> {
-//                        setError(response.toString())
-//                    }
-//                    is ApiResult.Fail.Exception -> {
-//                        setError(response.toString())
-//                    }
-//                    is ApiResult.Loading -> {}
-//                    is ApiResult.Success -> {
-//                        if (response.data.header.isSuccessful) {
-//                            _onRegistrationClick.value = time
-//                        } else {
-//                            _registerBtnStatus.value = false
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.HOUR_OF_DAY,hour)
+        cal.set(Calendar.MINUTE,minute)
+        cal.set(Calendar.SECOND,0)
+        val resultTime = Util.dateFormatForTime.format(cal.time)
+        Log.e("calendar",resultTime)
+        _registerBtnStatus.value =!alarmDao.isExistTime(resultTime)
+        if(!alarmDao.isExistTime(resultTime)){
+           val alarmCode =  alarmDao.getAll().takeIf { !it.isNullOrEmpty() }?.let {
+                it.last().alarmCode+1
+            }?:1
+            alarmDao.insertAll(AlarmEntity(
+                alarmCode = alarmCode,
+                alarmTime = resultTime,
+                alarmContent = "컨텐츠!"
+            ))
+            _onRegistrationClick.value = resultTime
+        }
     }
 }
 

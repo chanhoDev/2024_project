@@ -20,7 +20,9 @@ import com.chanho.common.Util.IS_DEVELOPER_MODE
 import com.chanho.common.Util.smoothScrollToPositionWithDelay
 import com.nhn.waplat.presentation.medication.BottomSheetContentAdapter
 import com.nhn.waplat.presentation.medication.CommonContentListener
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MedicationRegistrationFragment : Fragment() {
 
     private lateinit var binding: FragmentMedicationRegistrationBinding
@@ -84,16 +86,19 @@ class MedicationRegistrationFragment : Fragment() {
                             val layoutMananger = GridLayoutManager(requireContext(), 2)
                             recyclerView.layoutManager = layoutMananger
                         }
+
                         TimeType.HOUR -> {
                             linearLayoutManager = LinearLayoutManager(requireContext())
                             linearLayoutManager?.orientation = LinearLayoutManager.VERTICAL
                             recyclerView.layoutManager = linearLayoutManager
                         }
+
                         TimeType.MINUTE -> {
                             linearLayoutManager = LinearLayoutManager(requireContext())
                             linearLayoutManager?.orientation = LinearLayoutManager.VERTICAL
                             recyclerView.layoutManager = linearLayoutManager
                         }
+
                         else -> {}
                     }
                     _adapter = BottomSheetContentAdapter(object : CommonContentListener {
@@ -140,21 +145,17 @@ class MedicationRegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //TODO 테스트용
-        val minuteList = if (IS_DEVELOPER_MODE) {
-            emptyArray<String>().toMutableList().apply {
-                for (i in 0..59) {
-                    if (i < 10) {
-                        add("0$i")
-                    } else {
-                        add("$i")
+        val minuteList = emptyArray<String>().toMutableList().apply {
+            for (i in 0..59) {
+                if (i < 10) {
+                    add("0$i")
+                } else {
+                    add("$i")
 
-                    }
                 }
             }
-        } else {
-            binding.root.resources.getStringArray(com.chanho.common.R.array.MINUTE)
-                .toList()
         }
+
 
 
         viewModel.onLoadTimeDataList(

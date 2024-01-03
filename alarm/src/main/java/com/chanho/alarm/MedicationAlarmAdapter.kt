@@ -12,18 +12,18 @@ import com.chanho.common.Util.dateFormate_time_type
 
 class AlarmAdapter(
     private val listener: AlarmItemListener
-) : ListAdapter<MedicationAlarmTimeModel, RecyclerView.ViewHolder>(
-    object : DiffUtil.ItemCallback<MedicationAlarmTimeModel>() {
+) : ListAdapter<AlarmTimeModel, RecyclerView.ViewHolder>(
+    object : DiffUtil.ItemCallback<AlarmTimeModel>() {
         override fun areItemsTheSame(
-            oldItem: MedicationAlarmTimeModel,
-            newItem: MedicationAlarmTimeModel
+            oldItem: AlarmTimeModel,
+            newItem: AlarmTimeModel
         ): Boolean {
-            return oldItem.medicineScheduleSeq == newItem.medicineScheduleSeq
+            return oldItem.alarmCode == newItem.alarmCode
         }
 
         override fun areContentsTheSame(
-            oldItem: MedicationAlarmTimeModel,
-            newItem: MedicationAlarmTimeModel
+            oldItem: AlarmTimeModel,
+            newItem: AlarmTimeModel
         ): Boolean {
             return oldItem == newItem
         }
@@ -42,16 +42,11 @@ class AlarmAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = getItem(position) as MedicationAlarmTimeModel
+        val item = getItem(position) as AlarmTimeModel
         val medicationAlarmItemViewHolder = (holder as MedicationAlarmItemViewHolder)
-        val hour = item.hour
-        val minute = item.minute
-        val time = "$hour:$minute"
-        val convertTo24Time = dateFormate_24_hour.parse(time)
-        val conver24toAmpmTime = dateFormate_time_type.format(convertTo24Time)
         medicationAlarmItemViewHolder.item = item
-        medicationAlarmItemViewHolder.ampmText.text = conver24toAmpmTime.split(" ")[0]
-        medicationAlarmItemViewHolder.timeText.text = conver24toAmpmTime.split(" ")[1]
+        medicationAlarmItemViewHolder.timeContent.text =item.alarmContent
+        medicationAlarmItemViewHolder.timeText.text =item.alarmTime
     }
 }
 
@@ -60,9 +55,9 @@ class MedicationAlarmItemViewHolder(
     listener: AlarmItemListener
 ) : RecyclerView.ViewHolder(binding.root) {
     private val timeDeleteBtn = binding.timeDeleteBtn
-    val ampmText = binding.ampmText
+    val timeContent = binding.timeContent
     val timeText = binding.timeText
-    var item: MedicationAlarmTimeModel? = null
+    var item: AlarmTimeModel? = null
 
     init {
         timeDeleteBtn.setOnClickListener {
@@ -74,5 +69,5 @@ class MedicationAlarmItemViewHolder(
 }
 
 interface AlarmItemListener {
-    fun onAlarmItemClick(medicationAlarmTimeModel: MedicationAlarmTimeModel)
+    fun onAlarmItemClick(alarmTimeModel: AlarmTimeModel)
 }

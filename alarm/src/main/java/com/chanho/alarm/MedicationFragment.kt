@@ -1,46 +1,41 @@
 package com.chanho.alarm
 
 import android.os.Bundle
-import android.provider.SyncStateContract
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.chanho.alarm.databinding.FragmentMedicationBinding
 import com.chanho.common.AlarmFunctions.callAlarm
 import com.chanho.common.AlarmFunctions.cancelAlarm
-import com.chanho.common.Constants
 import com.chanho.common.Constants.REQUEST_ALARM_TIME
-import com.chanho.common.Util.getUserNameLast2Character
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 class MedicationFragment : Fragment() {
     private lateinit var _binding: FragmentMedicationBinding
     private lateinit var _viewModel: MedicationAlarmViewModel
     private val _adapter: AlarmAdapter by lazy {
         AlarmAdapter(object : AlarmItemListener {
-            override fun onAlarmItemClick(medicationAlarmTimeModel: MedicationAlarmTimeModel) {
-                _viewModel.removeAlarmItem(medicationAlarmTimeModel)
+            override fun onAlarmItemClick(alarmTimeModel: AlarmTimeModel) {
+                _viewModel.removeAlarmItem(alarmTimeModel)
             }
         })
     }
-    private val _observeMedicationList: (item: List<MedicationAlarmTimeModel>) -> Unit = {
-//        if (it.isNullOrEmpty()) {
-//            _binding.medicationEmptyLayout.visibility = View.VISIBLE
-//        } else {
-//            _binding.medicationEmptyLayout.visibility = View.GONE
-//            it.forEach { medicationItem ->
+    private val _observeMedicationList: (item: List<AlarmTimeModel>) -> Unit = {
+        if (it.isNullOrEmpty()) {
+            _binding.medicationEmptyLayout.visibility = View.VISIBLE
+        } else {
+            _binding.medicationEmptyLayout.visibility = View.GONE
+            it.forEach { medicationItem ->
 //                val time =
 //                    getString(
 //                        R.string.alarm_time_format,
-//                        medicationItem.hour,
-//                        medicationItem.minute
+//                        medicationItem.alarmTime
 //                    )
 //                callAlarm(
 //                    requireContext(),
@@ -49,22 +44,22 @@ class MedicationFragment : Fragment() {
 //                    content = getString(com.chanho.common.R.string.medication_alarm_title),
 //                    alarmCode = medicationItem.medicineScheduleSeq
 //                )
-//            }
-//        }
+            }
+        }
         _adapter.submitList(it)
     }
-    private val _observeDeleteAlarmItem: (item: MedicationAlarmTimeModel) -> Unit = {
+    private val _observeDeleteAlarmItem: (item: AlarmTimeModel) -> Unit = {
         Toast.makeText(
             requireContext(),
             getString(R.string.alarm_time_delete),
             Toast.LENGTH_SHORT
         ).show()
-        val time =
-            getString(
-                R.string.alarm_time_format,
-                it.hour,
-                it.minute
-            )
+
+//        val time =
+//            getString(
+//                R.string.alarm_time_format,
+//                medicationItem.alarmTime
+//            )
 //        cancelAlarm(
 //            context = requireContext(),
 //            alarmPopupType = Constants.AlarmPopupType.MEDICATION,
