@@ -1,17 +1,28 @@
 package com.chanho.project
 
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import com.chanho.common.Constants
+import com.chanho.calendar.CalendarActivity
+import com.chanho.common.CommonNotification
 import com.chanho.common.data.AlarmDatabase
-import com.chanho.common.data.AlarmEntity
 import com.chanho.project.databinding.ActivityMainBinding
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
+import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
@@ -22,9 +33,10 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.system.exitProcess
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -34,8 +46,12 @@ class MainActivity : AppCompatActivity() {
     private var rewardedAd: RewardedAd? = null
     private var mInterstitialAd: InterstitialAd? = null
     private final var TAG = "MainActivity"
+    private var loginStatus = false
+
     @Inject
     lateinit var database: AlarmDatabase
+    private lateinit var providers: ArrayList<AuthUI.IdpConfig>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,6 +65,72 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "ad mob 테스트입니다.", Toast.LENGTH_SHORT).show()
         }
         loadBaaner()
+
+        //firebase가 제공하는 이메일로그인 ui 가져오기
+        providers = arrayListOf(
+            AuthUI.IdpConfig.GoogleBuilder().build()
+        )
+
+        //현재 로그인이 안 되어 있으면 로그인 액티비티로 이동
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            logIn()
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    applicationContext,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                    )
+                ) {
+                    // 이미 권한을 거절한 경우 권한 설정 화면으로 이동
+                    Toast.makeText(this, "권한설정", Toast.LENGTH_SHORT).show()
+                    val intent: Intent =
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(
+                            Uri.parse("package:" + packageName)
+                        )
+                    startActivity(intent)
+                    finish()
+                } else {
+                    // 처음 권한 요청을 할 경우
+                    registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+                        when (it) {
+                            true -> {
+                                Toast.makeText(this, "권한요청1", Toast.LENGTH_SHORT).show()
+                            }
+
+                            false -> {
+                                Toast.makeText(this, "권한요청2", Toast.LENGTH_SHORT).show()
+                                moveTaskToBack(true)
+                                finishAndRemoveTask()
+                                exitProcess(0)
+                            }
+                        }
+                    }.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        }
+        CommonNotification.createNotificationForAlarmChannel(
+            this
+        )
+
+        with(binding) {
+            setLogInOutBtnStatus(loginStatus)
+            logout.setOnClickListener {
+                if(loginStatus){
+                    signOut()
+                }else{
+                    logIn()
+                }
+            }
+            calendar.setOnClickListener {
+                startActivity(Intent(this@MainActivity,CalendarActivity::class.java))
+            }
+        }
+
 
 //        binding.fullAddText.text = "전면 광고 테스트 버튼 "
 //        binding.fullAddText.setOnClickListener {
@@ -75,8 +157,8 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        }
 //        loadRewardAdd()
-
     }
+
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
@@ -101,6 +183,49 @@ class MainActivity : AppCompatActivity() {
 //        }
 //        Log.e("setDatabaseResult", alarmCode.toString())
 //    }
+
+    private val signInLauncher = registerForActivityResult(
+        FirebaseAuthUIActivityResultContract()
+    ) { res ->
+        this.onSignInResult(res)
+    }
+
+    fun logIn() {
+        // Create and launch sign-in intent
+        val signInIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            .build()
+        signInLauncher.launch(signInIntent)
+    }
+
+    //로그인 결과
+    private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
+        val response = result.idpResponse
+        loginStatus = (result.resultCode == RESULT_OK)
+        setLogInOutBtnStatus(loginStatus)
+
+    }
+
+    //로그아웃
+    fun signOut() {
+        AuthUI.getInstance()
+            .signOut(this)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    loginStatus = false
+                    setLogInOutBtnStatus(false)
+                }
+            }
+    }
+
+    fun setLogInOutBtnStatus(status:Boolean){
+        binding.logout.text = if(status){
+            "로그아웃"
+        }else{
+            "로그인"
+        }
+    }
 
     private fun loadRewardAdd() {
         var adRequest = AdRequest.Builder().build()

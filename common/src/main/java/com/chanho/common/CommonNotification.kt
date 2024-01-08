@@ -31,6 +31,18 @@ import kotlin.contracts.contract
 
 object CommonNotification {
 
+    private val vibrationPattern = longArrayOf(
+        0, 2000, 500, 1000, 500, 1000, 500, 1000, 500,
+        2000, 500, 1000, 500, 1000, 500, 1000, 500,
+        2000, 500, 1000, 500, 1000, 500, 1000, 500,
+        2000, 500, 1000, 500, 1000, 500, 1000, 500,
+        2000, 500, 1000, 500, 1000, 500, 1000, 500,
+        2000, 500, 1000, 500, 1000, 500, 1000, 500,
+        2000, 500, 1000, 500, 1000, 500, 1000, 500,
+        2000, 500, 1000, 500, 1000, 500, 1000, 500,
+        2000, 500, 1000, 500, 1000, 500, 1000, 500,
+    )
+
     fun deliverNotificationForAlarm(
         context: Context,
         alarmCode: Int,
@@ -63,19 +75,7 @@ object CommonNotification {
                 .setFullScreenIntent(fullScreenPendingIntent, true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
-                .setVibrate(
-                    longArrayOf(
-                        0, 2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                    )
-                )
+                .setVibrate(vibrationPattern)
                 .setAutoCancel(true)
                 .addAction(action)
                 .build()
@@ -83,10 +83,11 @@ object CommonNotification {
     }
 
     fun createNotificationForAlarmChannel(
-        notificationManager: NotificationManager
+        context:Context
     ) {
-
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(
                 NotificationChannel(
                     Constants.ALARM_CHANNEL,
@@ -95,19 +96,8 @@ object CommonNotification {
                 ).apply {
                     enableVibration(true)
                     description = "복약/일정 알림을 위한 채널 입니다."
-                    vibrationPattern = longArrayOf(
-                        0, 2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                        2000, 500, 1000, 500, 1000, 500, 1000, 500,
-                    )
+                    vibrationPattern = vibrationPattern
                     lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-
                     val audioAttributes = AudioAttributes.Builder()
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .setUsage(AudioAttributes.USAGE_ALARM)

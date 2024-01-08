@@ -130,17 +130,6 @@ class AlarmReceiver(): BroadcastReceiver() {
         }
     }
 
-    private fun migrateLegacyTimeToNewAlarmTime(
-        legacyAlarmTime: String?,
-        newAlarmTime: String?
-    ): String {
-        return legacyAlarmTime?.let { legacyTime ->
-            legacyTime
-        } ?: run {
-            newAlarmTime ?: ""
-        }
-    }
-
     private fun setNotification(
         context: Context,
         title: String,
@@ -149,11 +138,6 @@ class AlarmReceiver(): BroadcastReceiver() {
         isAlarmFirst: Boolean,
         alarmCode: Int
     ) {
-        val notificationManager: NotificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-//        notificationManager.cancel(alarmCode)
-
         val bundle = Bundle().apply {
             putString(CONTENT, title)
             putString(ALARM_TIME, alarmTime)
@@ -187,9 +171,6 @@ class AlarmReceiver(): BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        CommonNotification.createNotificationForAlarmChannel(
-            notificationManager
-        )
         CommonNotification.deliverNotificationForAlarm(
             context,
             alarmCode,

@@ -4,6 +4,9 @@ plugins {
     id("com.google.dagger.hilt.android")
 //    id ("kotlin-kapt")
     kotlin("kapt")
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -13,8 +16,8 @@ android {
     defaultConfig {
         applicationId = "com.chanho.project"
         minSdk = 26
-        targetSdk = 33
-        versionCode = 1
+        targetSdk = 34
+        versionCode = 2
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -51,8 +54,10 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads-lite:22.6.0")
     implementation("com.google.android.gms:play-services-ads:22.6.0")
     implementation(project(":alarm"))
+    implementation(project(":calendar"))
     implementation("androidx.room:room-ktx:2.6.1")
     implementation(project(mapOf("path" to ":common")))
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -70,6 +75,22 @@ dependencies {
     //hilt
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+
+
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Declare the dependency for the Firebase Authentication library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation ("com.google.firebase:firebase-auth")
+
+    //firebase ui
+    implementation ("com.firebaseui:firebase-ui-auth:7.2.0")
+    implementation ("androidx.work:work-runtime-ktx:2.7.0")
 }
 
 // Allow references to generated code

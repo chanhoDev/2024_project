@@ -8,14 +8,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.chanho.common.data.AlarmDao
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.ParseException
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 
-class AlarmNotificationActivity @Inject constructor(
-    private val alarmDao: AlarmDao
-) : AppCompatActivity() {
+@AndroidEntryPoint
+class AlarmNotificationActivity() : AppCompatActivity() {
     //다른앱 띄우기 권한이 없는 경우 복약, 일정의 푸시알림을 클릭했을때 알림 관련 처리하고 화면을 띄워주기 위함 화면
     var content = ""
         private set
@@ -23,6 +23,9 @@ class AlarmNotificationActivity @Inject constructor(
         private set
     var alarmCode = -1
         private set
+
+    @Inject
+    lateinit var alarmDao: AlarmDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
 

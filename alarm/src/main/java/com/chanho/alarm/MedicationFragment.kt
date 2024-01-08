@@ -11,8 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.chanho.alarm.databinding.FragmentMedicationBinding
 import com.chanho.common.AlarmFunctions.callAlarm
-import com.chanho.common.AlarmFunctions.cancelAlarm
-import com.chanho.common.Constants
 import com.chanho.common.Constants.REQUEST_ALARM_TIME
 import dagger.hilt.android.AndroidEntryPoint
 
