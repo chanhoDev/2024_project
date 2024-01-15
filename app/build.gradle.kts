@@ -60,6 +60,7 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     implementation(project(mapOf("path" to ":common")))
     implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
+    implementation(project(mapOf("path" to ":Localization")))
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
