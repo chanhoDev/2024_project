@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1047677080148",
+    "project_id": "privatealarm-94ac7",
+    "storage_bucket": "privatealarm-94ac7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1047677080148:android:5d1963163662009ca093c1",
+        "android_client_info": {
+          "package_name": "com.chanho.project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1047677080148-bs7jqg1rs72ub11g86otiam9usblicq9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chanho.project",
+            "certificate_hash": "1ff40c3351532be11da9340fe77b0ea406e27fde"
+          }
+        },
+        {
+          "client_id": "1047677080148-ugcqpou9asav4ebop9p8flpbnu5lo6fi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAM1uHAe9IxtUnQsztKQlMiZ7VKFr0CJt4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1047677080148-ugcqpou9asav4ebop9p8flpbnu5lo6fi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

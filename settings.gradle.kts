@@ -18,3 +18,5 @@ rootProject.name = "alarmProject"
 include(":app")
 include(":alarm")
 include(":common")
+include(":calendar")
+include(":imagerolling")
