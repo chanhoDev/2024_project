@@ -55,6 +55,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads:22.6.0")
     implementation(project(":alarm"))
     implementation(project(":calendar"))
+    implementation(project(":imagerolling"))
+
     implementation("androidx.room:room-ktx:2.6.1")
     implementation(project(mapOf("path" to ":common")))
     implementation("com.google.firebase:firebase-auth-ktx:22.3.0")

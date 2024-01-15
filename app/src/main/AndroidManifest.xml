@@ -2,34 +2,39 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:name=".AlarmApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AlarmProject"
-        android:name=".AlarmApplication"
-        android:hardwareAccelerated="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".FirstActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/Theme.AlarmProject" />
         <!-- Sample AdMob app ID: ca-app-pub-8417921365576498~4503958429 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-8417921365576498~4503958429"/>
+            android:value="ca-app-pub-8417921365576498~4503958429" />
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/title_activity_main"
             android:hardwareAccelerated="true"
-            android:theme="@style/Theme.AlarmProject" >
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.AlarmProject">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
