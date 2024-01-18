@@ -127,13 +127,6 @@ class FirstActivity : AppCompatActivity() {
                     logIn()
                 }
             }
-            calendar.setOnClickListener {
-                startActivity(Intent(this@FirstActivity,CalendarActivity::class.java))
-            }
-
-            rolling.setOnClickListener {
-                startActivity(Intent(this@FirstActivity,ImageScrollingActivity::class.java))
-            }
         }
 
 
