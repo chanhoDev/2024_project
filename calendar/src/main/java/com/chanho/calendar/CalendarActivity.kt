@@ -1,18 +1,25 @@
 package com.chanho.calendar
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.view.ViewCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.core.view.marginBottom
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,6 +46,24 @@ import java.util.UUID
 class CalendarActivity : AppCompatActivity() {
     private lateinit var binding: CalendarDayLayoutBinding
     private lateinit var _viewModel: CalendarViewModel
+    private var currentMonth = YearMonth.now()
+    private var selectedDate: LocalDate? = null
+    private val today = LocalDate.now()
+    private val titleSameYearFormatter = DateTimeFormatter.ofPattern("MMMM")
+    private val titleFormatter = DateTimeFormatter.ofPattern("MMM yyyy")
+    private val selectionFormatter = DateTimeFormatter.ofPattern("d MMM yyyy")
+    private val events = mutableMapOf<LocalDate, List<Event>>()
+    private val colorList = mutableListOf<Int>(
+        R.color.example_1_bg,
+        R.color.example_2_black,
+        R.color.example_2_red,
+        R.color.example_3_blue,
+        R.color.example_4_green
+    )
+
+    private val _observeError: (item: String) -> Unit = {
+        Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+    }
 
     private val eventsAdapter = Example3EventsAdapter {
         AlertDialog.Builder(this@CalendarActivity)
@@ -48,24 +73,6 @@ class CalendarActivity : AppCompatActivity() {
             }
             .setNegativeButton(R.string.close, null)
             .show()
-    }
-
-
-    private var selectedDate: LocalDate? = null
-    private val today = LocalDate.now()
-    private val titleSameYearFormatter = DateTimeFormatter.ofPattern("MMMM")
-    private val titleFormatter = DateTimeFormatter.ofPattern("MMM yyyy")
-    private val selectionFormatter = DateTimeFormatter.ofPattern("d MMM yyyy")
-    private val events = mutableMapOf<LocalDate, List<Event>>()
-
-    private val _observeError: (item: String) -> Unit = {
-        Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun deleteEvent(event: Event) {
-        val date = event.date
-        events[date] = events[date].orEmpty().minus(event)
-        updateAdapterForDate(date)
     }
 
     private val inputDialog by lazy<AlertDialog> {
@@ -89,6 +96,7 @@ class CalendarActivity : AppCompatActivity() {
                 saveEvent(editText.text.toString())
                 // Prepare EditText for reuse.
                 editText.setText("")
+
             }
             .setNegativeButton(R.string.close, null)
             .create()
@@ -107,49 +115,64 @@ class CalendarActivity : AppCompatActivity() {
             }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = CalendarDayLayoutBinding.inflate(layoutInflater)
         _viewModel = ViewModelProvider(this)[CalendarViewModel::class.java]
         setContentView(binding.root)
         onObserve()
-
-        binding.exThreeRv.apply {
-            layoutManager = LinearLayoutManager(this@CalendarActivity, RecyclerView.VERTICAL, false)
-            adapter = eventsAdapter
-            addItemDecoration(DividerItemDecoration(this@CalendarActivity, RecyclerView.VERTICAL))
-        }
-
-        binding.exThreeCalendar.monthScrollListener = {
-//            activityToolbar.title = if (it.yearMonth.year == today.year) {
-//                titleSameYearFormatter.format(it.yearMonth)
-//            } else {
-//                titleFormatter.format(it.yearMonth)
-//            }
-            // Select the first day of the visible month.
-            selectDate(it.yearMonth.atDay(1))
-        }
-
-        val daysOfWeek = daysOfWeek()
-        val currentMonth = YearMonth.now()
-        val startMonth = currentMonth.minusMonths(50)
-        val endMonth = currentMonth.plusMonths(50)
-        configureBinders(daysOfWeek)
-        binding.exThreeCalendar.apply {
-            setup(startMonth, endMonth, daysOfWeek.first())
-            scrollToMonth(currentMonth)
-        }
-
-        if (savedInstanceState == null) {
-            // Show today's events initially.
-            binding.exThreeCalendar.post { selectDate(today) }
-        }
-        binding.exThreeAddButton.setOnClickListener { inputDialog.show() }
+        onBindView(savedInstanceState)
     }
 
-    override fun onStart() {
-        super.onStart()
+    private fun onBindView(savedInstanceState: Bundle?) {
         with(binding) {
+            exThreeRv.apply {
+                layoutManager =
+                    LinearLayoutManager(this@CalendarActivity, RecyclerView.VERTICAL, false)
+                adapter = eventsAdapter
+                addItemDecoration(
+                    DividerItemDecoration(
+                        this@CalendarActivity,
+                        RecyclerView.VERTICAL
+                    )
+                )
+            }
+
+            exThreeCalendar.monthScrollListener = {
+                titleTextview.text = if (it.yearMonth.year == today.year) {
+                    titleSameYearFormatter.format(it.yearMonth)
+                } else {
+                    titleFormatter.format(it.yearMonth)
+                }
+                // Select the first day of the visible month.
+                selectDate(it.yearMonth.atDay(1))
+            }
+            prevBtn.setOnClickListener {
+                currentMonth = currentMonth.plusMonths(-1)
+                exThreeCalendar.scrollToMonth(currentMonth)
+            }
+            forwardBtn.setOnClickListener {
+                currentMonth = currentMonth.plusMonths(1)
+                exThreeCalendar.scrollToMonth(currentMonth)
+            }
+
+            val daysOfWeek = daysOfWeek()
+//            val currentMonth = YearMonth.now()
+            val startMonth = currentMonth.minusMonths(50)
+            val endMonth = currentMonth.plusMonths(50)
+            configureBinders(daysOfWeek)
+            exThreeCalendar.apply {
+                setup(startMonth, endMonth, daysOfWeek.first())
+
+                scrollToMonth(currentMonth)
+            }
+
+            if (savedInstanceState == null) {
+                // Show today's events initially.
+                exThreeCalendar.post { selectDate(today) }
+            }
+            exThreeAddButton.setOnClickListener { inputDialog.show() }
 
         }
     }
@@ -158,6 +181,13 @@ class CalendarActivity : AppCompatActivity() {
         with(_viewModel) {
 //            deleteAlarmItem.observe(viewLifecycleOwner, _observeDeleteAlarmItem)
         }
+    }
+
+    private fun deleteEvent(event: Event) {
+        val date = event.date
+        events[date] = events[date].orEmpty().minus(event)
+        updateAdapterForDate(date)
+
     }
 
     private fun selectDate(date: LocalDate) {
@@ -177,6 +207,8 @@ class CalendarActivity : AppCompatActivity() {
             notifyDataSetChanged()
         }
         binding.exThreeSelectedDateText.text = selectionFormatter.format(date)
+        Log.e("updateAdapterForDate", "$date :: $selectedDate")
+        binding.exThreeCalendar.notifyCalendarChanged()
     }
 
     private fun saveEvent(text: String) {
@@ -213,37 +245,59 @@ class CalendarActivity : AppCompatActivity() {
         binding.exThreeCalendar.dayBinder = object : MonthDayBinder<DayViewContainer> {
             override fun create(view: View) = DayViewContainer(view)
             override fun bind(container: DayViewContainer, data: CalendarDay) {
+                Log.e("calendar", "$data ")
                 container.day = data
+                val layout = container.binding.exThreeDayLayout
                 val textView = container.binding.exThreeDayText
-                val dotView = container.binding.exThreeDotView
+                val dotLayout = container.binding.dotLayout
+//                val dotView = container.binding.exThreeDotView
 
                 textView.text = data.date.dayOfMonth.toString()
 
                 if (data.position == DayPosition.MonthDate) {
                     textView.makeVisible()
+                    dotLayout.removeAllViews()
+                    val eventList = events[data.date]
+                    eventList?.forEachIndexed {index,event ->
+                        dotLayout.addView(createBtn(binding.root.context,index,event.text))
+                    }
                     when (data.date) {
                         today -> {
                             textView.setTextColorRes(R.color.example_3_white)
-                            textView.setBackgroundResource(R.drawable.example_3_today_bg)
-                            dotView.makeInVisible()
+                            textView.setBackgroundColor(resources.getColor(R.color.example_3_blue,null))
                         }
 
                         selectedDate -> {
                             textView.setTextColorRes(R.color.example_3_blue)
-                            textView.setBackgroundResource(R.drawable.example_3_selected_bg)
-                            dotView.makeInVisible()
+                            textView.setBackgroundColor(resources.getColor(R.color.example_3_blue_light,null))
                         }
 
                         else -> {
                             textView.setTextColorRes(R.color.example_3_black)
-                            textView.background = null
-                            dotView.isVisible = events[data.date].orEmpty().isNotEmpty()
+                            textView.background =null
                         }
                     }
                 } else {
                     textView.makeInVisible()
-                    dotView.makeInVisible()
+//                    dotView.makeInVisible()
                 }
+            }
+            fun createBtn(context: Context,index:Int,content:String): View {
+                val textView = TextView(context)
+                val dp = context.resources.displayMetrics.density+0.5f
+                val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                     setMargins(5,5,5,0)
+                }
+                textView.apply {
+                    text = content
+                    setTextColor(resources.getColor(R.color.white,null))
+                    textSize = 2*dp
+                    layoutParams = lp
+                    setBackgroundColor(resources.getColor(colorList[index%(colorList.size-1)],null))
+//                    setBackgroundResource(R.drawable.example_3_today_bg)
+                    id = ViewCompat.generateViewId()
+                }
+                return textView
             }
         }
 

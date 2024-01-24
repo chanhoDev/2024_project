@@ -7,62 +7,95 @@
     android:background="@android:color/white"
     android:orientation="vertical">
 
-   <androidx.core.widget.NestedScrollView
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       app:layout_constraintTop_toTopOf="parent"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintBottom_toBottomOf="parent">
+    <LinearLayout
+        android:id="@+id/calendar_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="10dp"
+        app:layout_constraintBottom_toTopOf="@id/exThreeCalendar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:orientation="vertical">
+        <TextView
+            android:id="@+id/prev_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="10dp"
+            android:text="이전"
+            android:textSize="20dp" />
 
-         <com.kizitonwose.calendar.view.CalendarView
-             android:id="@+id/exThreeCalendar"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             app:cv_dayViewResource="@layout/example_3_calendar_day"
-             app:cv_monthHeaderResource="@layout/example_3_calendar_header" />
+        <TextView
+            android:id="@+id/title_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:textSize="20dp" />
 
-         <TextView
-             android:id="@+id/exThreeSelectedDateText"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:layout_marginTop="8dp"
-             android:background="#EEEEEE"
-             android:fontFamily="sans-serif-medium"
-             android:paddingStart="20dp"
-             android:paddingTop="12dp"
-             android:paddingEnd="20dp"
-             android:paddingBottom="12dp"
-             android:textAllCaps="true"
-             android:textColor="@android:color/black"
-             android:textSize="14sp"
-             tools:text="7 Jan, 2019" />
+        <TextView
+            android:id="@+id/forward_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="10dp"
+            android:text="이후"
+            android:textSize="20dp" />
+    </LinearLayout>
 
-         <androidx.recyclerview.widget.RecyclerView
-             android:id="@+id/exThreeRv"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:nestedScrollingEnabled="false" />
+    <com.kizitonwose.calendar.view.CalendarView
+        android:id="@+id/exThreeCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cv_dayViewResource="@layout/example_3_calendar_day"
+        app:cv_monthHeaderResource="@layout/example_3_calendar_header"
+        app:layout_constraintBottom_toTopOf="@id/exThreeSelectedDateText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/calendar_header" />
 
-      </LinearLayout>
+    <TextView
+        android:id="@+id/exThreeSelectedDateText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="#EEEEEE"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="20dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="12dp"
+        android:textAllCaps="true"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/exThreeRv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/exThreeCalendar"
+        tools:text="7 Jan, 2019" />
 
-   </androidx.core.widget.NestedScrollView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/exThreeRv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:nestedScrollingEnabled="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/exThreeSelectedDateText" />
 
-   <com.google.android.material.floatingactionbutton.FloatingActionButton
-       android:id="@+id/exThreeAddButton"
-       android:layout_width="100dp"
-       android:layout_height="100dp"
-       android:layout_gravity="end|bottom"
-       android:layout_margin="20dp"
-       app:tint="@android:color/white"
-       app:backgroundTint="@android:color/holo_green_dark"
-       app:srcCompat="@drawable/ic_add"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintBottom_toBottomOf="parent"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/exThreeAddButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="20dp"
+        android:foregroundGravity="center"
+        app:backgroundTint="@android:color/holo_green_dark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_add"
+        app:tint="@android:color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

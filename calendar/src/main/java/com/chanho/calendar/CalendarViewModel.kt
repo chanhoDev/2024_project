@@ -19,8 +19,8 @@ class CalendarViewModel  @Inject constructor(
     private val alarmDao: AlarmDao
 ) : AndroidViewModel(application) {
 
-    private val _ampmResult = MutableLiveData<String>()
-    val ampmResult: LiveData<String> = _ampmResult
+//    private val _ampmResult = MutableLiveData<String>()
+//    val ampmResult: LiveData<String> = _ampmResult
 
 }
 
