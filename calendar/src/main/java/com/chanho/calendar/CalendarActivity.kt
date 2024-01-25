@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -100,19 +101,19 @@ class CalendarActivity : AppCompatActivity() {
             }
             .setNegativeButton(R.string.close, null)
             .create()
-            .apply {
-                this.setOnShowListener {
-                    // Show the keyboard
-                    editText.requestFocus()
-                    inputMethodManager
-                        .toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
-                }
-                setOnDismissListener {
-                    // Hide the keyboard
-                    inputMethodManager
-                        .toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
-                }
-            }
+//            .apply {
+//                this.setOnShowListener {
+//                    // Show the keyboard
+//                    editText.requestFocus()
+//                    inputMethodManager
+//                        .toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+//                }
+//                setOnDismissListener {
+//                    // Hide the keyboard
+//                    inputMethodManager
+//                        .toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+//                }
+//            }
     }
 
 
@@ -189,6 +190,35 @@ class CalendarActivity : AppCompatActivity() {
         updateAdapterForDate(date)
 
     }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        var height = 0
+        Log.e("touchEvent","${event.toString()}")
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                height = binding.main.height
+                val guideLine = binding.guideline
+                val params = guideLine.layoutParams as ConstraintLayout.LayoutParams
+                var result = (event.rawY) / height
+                if(result >0.06 && result<=1){
+                    params.guidePercent =result
+                    guideLine.layoutParams = params
+                    binding.exThreeCalendar.notifyCalendarChanged()
+                }
+
+            }
+
+            else -> {
+                return false
+            }
+        }
+        return true
+    }
+
 
     private fun selectDate(date: LocalDate) {
         if (selectedDate != date) {
