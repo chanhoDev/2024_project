@@ -62,6 +62,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
     implementation(project(mapOf("path" to ":Localization")))
     implementation(project(mapOf("path" to ":graph")))
+    implementation(project(mapOf("path" to ":motion")))
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

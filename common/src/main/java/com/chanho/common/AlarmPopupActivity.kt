@@ -24,6 +24,9 @@ class AlarmPopupActivity @Inject constructor(
         private set
     var alarmCode: Int = -1
         private set
+    var dayOfWeek:BooleanArray? = booleanArrayOf()
+        private set
+
     private lateinit var binding: ActivityAlarmPopupBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +45,7 @@ class AlarmPopupActivity @Inject constructor(
         content = bundle.getString(Constants.CONTENT).toString()
         alarmTime = bundle.getString(Constants.ALARM_TIME)
         alarmCode = bundle.getInt(Constants.ALARM_CODE, -1)
+        dayOfWeek = intent.getBooleanArrayExtra(Constants.ALARM_DAY_OF_WEEK)
     }
 
     fun setAlarmTime(context: Context) {
@@ -98,7 +102,8 @@ class AlarmPopupActivity @Inject constructor(
                             Util.dateFormat.format(nowCalendar.time),
                             alarmCode,
                             content,
-                            isAlarmFirst = true
+                            isAlarmFirst = true,
+                            dayOfWeek
                         )
                     } else {
                         AlarmFunctions.cancelAlarm(

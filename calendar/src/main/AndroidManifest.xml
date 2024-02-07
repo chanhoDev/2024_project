@@ -3,10 +3,14 @@
 
     <application>
         <activity
+            android:name=".CalendarAddActivity"
+            android:exported="false" />
+        <activity
             android:name=".CalendarActivity"
             android:exported="true"
             android:label="calendarActivity"
             android:theme="@style/Theme.AlarmProject">
         </activity>
     </application>
+
 </manifest>

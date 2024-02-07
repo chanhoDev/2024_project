@@ -156,8 +156,6 @@ class MedicationRegistrationFragment : Fragment() {
             }
         }
 
-
-
         viewModel.onLoadTimeDataList(
             ampmList = binding.root.resources.getStringArray(com.chanho.common.R.array.AMPM)
                 .toList(),

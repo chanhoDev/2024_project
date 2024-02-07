@@ -4,7 +4,7 @@
     <application>
         <activity
             android:name=".LocalizationActivity"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_localization"
             android:theme="@style/Theme.AlarmProject" />
     </application>
