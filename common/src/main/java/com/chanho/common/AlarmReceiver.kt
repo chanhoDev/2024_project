@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.chanho.common.Constants.ALARM_CODE
+import com.chanho.common.Constants.ALARM_DAY_OF_WEEK
 import com.chanho.common.Constants.ALARM_TIME
 import com.chanho.common.Constants.CONTENT
 import com.chanho.common.Constants.IS_ALARM_FIRST
@@ -20,9 +21,10 @@ import java.util.Date
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AlarmReceiver(): BroadcastReceiver() {
+class AlarmReceiver() : BroadcastReceiver() {
 
-    @Inject lateinit var alarmDao: AlarmDao
+    @Inject
+    lateinit var alarmDao: AlarmDao
 
     var content: String = ""
         private set
@@ -31,6 +33,9 @@ class AlarmReceiver(): BroadcastReceiver() {
     var legacyAlarmTime: String? = ""
         private set
     var alarmTime: String? = ""
+        private set
+
+    var dayOfWeek:BooleanArray? = booleanArrayOf()
         private set
 
     var isContinueAlarmReceiver: Boolean = false
@@ -43,6 +48,7 @@ class AlarmReceiver(): BroadcastReceiver() {
         content = intent.getStringExtra(CONTENT).toString()
         alarmTime = intent.getStringExtra(ALARM_TIME)
         val alarmCode = intent.getIntExtra(ALARM_CODE, 0)
+        dayOfWeek = intent.getBooleanArrayExtra(ALARM_DAY_OF_WEEK)
 
         Log.d(
             "TAG",
@@ -88,6 +94,7 @@ class AlarmReceiver(): BroadcastReceiver() {
             this.time = datetime
         }
 
+
         AlarmFunctions.cancelAlarm(
             context,
             Util.dateFormat.format(calendar.time),
@@ -101,14 +108,20 @@ class AlarmReceiver(): BroadcastReceiver() {
             set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
             set(Calendar.SECOND, calendar.get(Calendar.SECOND))
         }
-        if (alarmDao.loadByAlarmCode(alarmCode)!=null) {
-            if (isAlarmFirst) {
-                AlarmFunctions.setAlarmManager(
+
+        val currentDayOfWeek = nowCalendar.get(Calendar.DAY_OF_WEEK)
+        dayOfWeek?.forEachIndexed { index,bool ->
+            Log.e("!dayOfWeek $index",bool.toString())
+        }
+        dayOfWeek?.let {
+            if (it.filter { !it }.size == 7) {
+                setNotification(
                     context,
-                    Util.dateFormat.format(nowCalendar.time),
-                    alarmCode,
-                    content,
-                    isAlarmFirst = false
+                    title = content,
+                    body = formatTime,
+                    alarmTime = alarmTime ?: "",
+                    isAlarmFirst = isAlarmFirst,
+                    alarmCode = alarmCode
                 )
             } else {
                 AlarmFunctions.setAlarmManager(
@@ -116,17 +129,22 @@ class AlarmReceiver(): BroadcastReceiver() {
                     Util.dateFormat.format(nowCalendar.time),
                     alarmCode,
                     content,
-                    isAlarmFirst = true
+                    isAlarmFirst = !isAlarmFirst,
+                    dayOfWeek
                 )
+                if (it[currentDayOfWeek - 1]) {
+                    setNotification(
+                        context,
+                        title = content,
+                        body = formatTime,
+                        alarmTime = alarmTime ?: "",
+                        isAlarmFirst = isAlarmFirst,
+                        alarmCode = alarmCode
+                    )
+                }
             }
-            setNotification(
-                context,
-                title = content,
-                body = formatTime,
-                alarmTime = alarmTime ?: "",
-                isAlarmFirst = isAlarmFirst,
-                alarmCode = alarmCode
-            )
+        } ?: run {
+            //에러 처리
         }
     }
 
@@ -160,7 +178,7 @@ class AlarmReceiver(): BroadcastReceiver() {
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
             context.applicationContext,
-            0,
+            alarmCode,
             fullScreenIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

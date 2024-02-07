@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import com.chanho.common.Constants.ALARM_CODE
+import com.chanho.common.Constants.ALARM_DAY_OF_WEEK
 import com.chanho.common.Constants.ALARM_TIME
 import com.chanho.common.Constants.ALARM_TYPE
 import com.chanho.common.Constants.CONTENT
@@ -26,23 +27,26 @@ object AlarmFunctions {
         time: String,
         alarmCode: Int,
         content: String,
-        isAlarmFirst: Boolean = true
+        isAlarmFirst: Boolean = true,
+        alarmDayOfWeek: BooleanArray? = booleanArrayOf()
     ) {
 
-        val isAlarmRegistered = isAlarmRegistered(context,alarmCode)
-        if(isAlarmRegistered){
+        val isAlarmRegistered = isAlarmRegistered(context, alarmCode)
+        if (isAlarmRegistered) {
             Log.d("alarm Already exist ", "$isAlarmRegistered")
-        }else{
+        } else {
             Log.d("alarm not exist", "$isAlarmRegistered")
-                setAlarmManager(
-                    context,
-                    time,
-                    alarmCode,
-                    content,
-                    isAlarmFirst = isAlarmFirst
-                )
+            setAlarmManager(
+                context,
+                time,
+                alarmCode,
+                content,
+                isAlarmFirst = isAlarmFirst,
+                alarmDayOfWeek = alarmDayOfWeek
+            )
         }
     }
+
     fun isAlarmRegistered(context: Context, alarmCode: Int): Boolean {
         val receiverIntent = Intent(context, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
@@ -59,7 +63,8 @@ object AlarmFunctions {
         time: String,
         alarmCode: Int,
         content: String,
-        isAlarmFirst: Boolean = true
+        isAlarmFirst: Boolean = true,
+        alarmDayOfWeek: BooleanArray? = booleanArrayOf()
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         Log.d("setAlarmManager", "setAlarmManager ALARM_TIME = ${time}")
@@ -69,6 +74,7 @@ object AlarmFunctions {
                 putExtra(ALARM_TIME, time)
                 putExtra(IS_ALARM_FIRST, isAlarmFirst)
                 putExtra(ALARM_CODE, alarmCode)
+                putExtra(ALARM_DAY_OF_WEEK, alarmDayOfWeek)
             }
         }
 
@@ -90,11 +96,12 @@ object AlarmFunctions {
         )
         if (resultDate != null) {
             try {
-                alarmManager?.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    resultDate.timeInMillis,
-                    pendingIntent
-                )
+//                alarmManager?.setExactAndAllowWhileIdle(
+//                    AlarmManager.RTC_WAKEUP,
+//                    resultDate.timeInMillis,
+//                    pendingIntent
+//                )
+                alarmManager?.setAlarmClock(AlarmManager.AlarmClockInfo(resultDate.timeInMillis, null), pendingIntent)
                 Log.d("resultAlarmManager", "알림 등록 성공 ")
 
             } catch (e: Exception) {
@@ -112,50 +119,47 @@ object AlarmFunctions {
         val calendar = Calendar.getInstance()
         calendar.time = datetime
 
-            val nowCalendar = Calendar.getInstance().apply {
-                timeInMillis = System.currentTimeMillis()
-                set(Calendar.AM_PM, calendar.get(Calendar.AM_PM))
-                set(Calendar.HOUR, calendar.get(Calendar.HOUR))
-                set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
-                set(Calendar.SECOND, calendar.get(Calendar.SECOND))
-            }
-            if (isAlarmFirst) {
-                // 재알림 TEST용 1분뒤 등록
-                Log.d(" test1", "처음 등록했을때 test1 ${nowCalendar.time}")
+        val nowCalendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.AM_PM, calendar.get(Calendar.AM_PM))
+            set(Calendar.HOUR, calendar.get(Calendar.HOUR))
+            set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
+            set(Calendar.SECOND, calendar.get(Calendar.SECOND))
+        }
+        if (isAlarmFirst) {
+            // 재알림 TEST용 1분뒤 등록
+            Log.d(" test1", "처음 등록했을때 test1 ${nowCalendar.time}")
 
-                if (nowCalendar.time < Date()) {
-                    // 재알림 TEST용 1분뒤 등록
-                    if (IS_DEVELOPER_MODE) {
-                        nowCalendar.timeInMillis = System.currentTimeMillis()
-                        nowCalendar.add(Calendar.MINUTE, 2)
-                    } else {
-                        nowCalendar.add(Calendar.DAY_OF_MONTH, 1)
-                    }
-                    // 1일 뒤 등록
-                    Log.d(
-                        "test2",
-                        " 확인함 다음날 반복등록 test2 처음 등록했으나 이미 과거인 경우  ${nowCalendar.time}"
-                    )
-                }
-            } else {
+            if (nowCalendar.time < Date()) {
                 // 재알림 TEST용 1분뒤 등록
                 if (IS_DEVELOPER_MODE) {
                     nowCalendar.timeInMillis = System.currentTimeMillis()
-                    nowCalendar.add(Calendar.MINUTE, 1)
+                    nowCalendar.add(Calendar.MINUTE, 2)
                 } else {
-                    // 5분뒤 등록
-                    nowCalendar.add(Calendar.MINUTE, 5)
+                    nowCalendar.add(Calendar.DAY_OF_MONTH, 1)
                 }
-
-                Log.d("test3", "확인 안함 재알림 test3  ${nowCalendar.time}")
+                // 1일 뒤 등록
+                Log.d(
+                    "test2", " 확인함 다음날 반복등록 test2 처음 등록했으나 이미 과거인 경우  ${nowCalendar.time}"
+                )
             }
-            return nowCalendar
+        } else {
+            // 재알림 TEST용 1분뒤 등록
+            if (IS_DEVELOPER_MODE) {
+                nowCalendar.timeInMillis = System.currentTimeMillis()
+                nowCalendar.add(Calendar.MINUTE, 1)
+            } else {
+                // 5분뒤 등록
+                nowCalendar.add(Calendar.MINUTE, 5)
+            }
+
+            Log.d("test3", "확인 안함 재알림 test3  ${nowCalendar.time}")
+        }
+        return nowCalendar
     }
 
     fun cancelAlarm(
-        context: Context,
-        time: String,
-        alarmCode: Int
+        context: Context, time: String, alarmCode: Int
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val receiverIntent = Intent(context, AlarmReceiver::class.java)

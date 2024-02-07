@@ -28,6 +28,8 @@ object Constants {
     const val CHANNEL_ID = "channelId"
     const val ALARM_TIME = "alarm_time"
     const val ALARM_CODE = "alarm_code"
+    const val ALARM_DAY_OF_WEEK = "alarm_day_of_week"
+
 
     const val IS_FIRST_SERVICE_VISIT = "isFirstServiceVisit"
     const val SCHEDULE_DETAIL_MODEL = "scheduleDetailModel"

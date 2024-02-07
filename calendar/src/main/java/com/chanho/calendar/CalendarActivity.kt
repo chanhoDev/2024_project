@@ -1,26 +1,27 @@
 package com.chanho.calendar
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
-import androidx.core.view.isVisible
-import androidx.core.view.marginBottom
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +30,7 @@ import com.chanho.calendar.databinding.CalendarDayLayoutBinding
 import com.chanho.calendar.databinding.Example3CalendarDayBinding
 import com.chanho.calendar.databinding.Example3CalendarHeaderBinding
 import com.chanho.calendar.databinding.Example3EventItemViewBinding
+import com.chanho.common.AlarmFunctions
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -45,6 +47,10 @@ import java.util.UUID
 
 @AndroidEntryPoint
 class CalendarActivity : AppCompatActivity() {
+    companion object {
+        val CALENDAR_DATA = "calendar_data"
+    }
+
     private lateinit var binding: CalendarDayLayoutBinding
     private lateinit var _viewModel: CalendarViewModel
     private var currentMonth = YearMonth.now()
@@ -53,7 +59,7 @@ class CalendarActivity : AppCompatActivity() {
     private val titleSameYearFormatter = DateTimeFormatter.ofPattern("MMMM")
     private val titleFormatter = DateTimeFormatter.ofPattern("MMM yyyy")
     private val selectionFormatter = DateTimeFormatter.ofPattern("d MMM yyyy")
-    private val events = mutableMapOf<LocalDate, List<Event>>()
+    private val calendarDatas = mutableMapOf<LocalDate, List<CalendarData>>()
     private val colorList = mutableListOf<Int>(
         R.color.example_1_bg,
         R.color.example_2_black,
@@ -61,6 +67,35 @@ class CalendarActivity : AppCompatActivity() {
         R.color.example_3_blue,
         R.color.example_4_green
     )
+    private var resultLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            Log.e("resultLauncher", "result =${result.data.toString()}")
+            if (result.resultCode == Activity.RESULT_OK) {
+                val calendarData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    result.data?.getParcelableExtra(CALENDAR_DATA, CalendarData::class.java)
+                } else {
+                    result.data?.getParcelableExtra(CALENDAR_DATA) as CalendarData?
+                }
+                calendarData?.let { data ->
+                    selectedDate = LocalDate.parse(data.date)
+                    calendarDatas[LocalDate.parse(data.date)] =
+                        calendarDatas[LocalDate.parse(data.date)].orEmpty().plus(data)
+                    updateAdapterForDate(LocalDate.parse(data.date))
+                    val time = "${data.date} ${data.time}"
+                    val alarmCode = System.currentTimeMillis().toInt()
+                    Log.e("!beforeConvertDayOfWeek",data.dayOfWeek.toString())
+                    val dayOfWeek = data.dayOfWeek.map { it.isClick }.toBooleanArray()
+                    AlarmFunctions.callAlarm(
+                        this,
+                        time = time,
+                        content = data.content,
+                        alarmCode = alarmCode,
+                        alarmDayOfWeek = dayOfWeek
+                    )
+                }
+            }
+
+        }
 
     private val _observeError: (item: String) -> Unit = {
         Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
@@ -70,7 +105,7 @@ class CalendarActivity : AppCompatActivity() {
         AlertDialog.Builder(this@CalendarActivity)
             .setMessage(R.string.example_3_dialog_delete_confirmation)
             .setPositiveButton(R.string.delete) { _, _ ->
-                deleteEvent(it)
+//                deleteEvent(it)
             }
             .setNegativeButton(R.string.close, null)
             .show()
@@ -94,7 +129,7 @@ class CalendarActivity : AppCompatActivity() {
             .setTitle(getString(R.string.example_3_input_dialog_title))
             .setView(layout)
             .setPositiveButton(R.string.save) { _, _ ->
-                saveEvent(editText.text.toString())
+//                saveEvent(editText.text.toString())
                 // Prepare EditText for reuse.
                 editText.setText("")
 
@@ -173,7 +208,11 @@ class CalendarActivity : AppCompatActivity() {
                 // Show today's events initially.
                 exThreeCalendar.post { selectDate(today) }
             }
-            exThreeAddButton.setOnClickListener { inputDialog.show() }
+            exThreeAddButton.setOnClickListener {
+                val intent = Intent(this@CalendarActivity, CalendarAddActivity::class.java)
+//                inputDialog.show()
+                resultLauncher.launch(intent)
+            }
 
         }
     }
@@ -184,16 +223,17 @@ class CalendarActivity : AppCompatActivity() {
         }
     }
 
-    private fun deleteEvent(event: Event) {
-        val date = event.date
-        events[date] = events[date].orEmpty().minus(event)
-        updateAdapterForDate(date)
 
-    }
+//    private fun deleteEvent(event: Event) {
+//        val date = event.date
+//        calendarDatas[date] = calendarDatas[date].orEmpty().minus(event)
+//        updateAdapterForDate(date)
+//
+//    }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         var height = 0
-        Log.e("touchEvent","${event.toString()}")
+        Log.e("touchEvent", "${event.toString()}")
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
 
@@ -204,8 +244,8 @@ class CalendarActivity : AppCompatActivity() {
                 val guideLine = binding.guideline
                 val params = guideLine.layoutParams as ConstraintLayout.LayoutParams
                 var result = (event.rawY) / height
-                if(result >0.06 && result<=1){
-                    params.guidePercent =result
+                if (result > 0.06 && result <= 1) {
+                    params.guidePercent = result
                     guideLine.layoutParams = params
                     binding.exThreeCalendar.notifyCalendarChanged()
                 }
@@ -232,8 +272,8 @@ class CalendarActivity : AppCompatActivity() {
 
     private fun updateAdapterForDate(date: LocalDate) {
         eventsAdapter.apply {
-            events.clear()
-            events.addAll(this@CalendarActivity.events[date].orEmpty())
+            calendarDatas.clear()
+            calendarDatas.addAll(this@CalendarActivity.calendarDatas[date].orEmpty())
             notifyDataSetChanged()
         }
         binding.exThreeSelectedDateText.text = selectionFormatter.format(date)
@@ -241,22 +281,22 @@ class CalendarActivity : AppCompatActivity() {
         binding.exThreeCalendar.notifyCalendarChanged()
     }
 
-    private fun saveEvent(text: String) {
-        if (text.isBlank()) {
-            Toast.makeText(
-                this@CalendarActivity,
-                R.string.example_3_empty_input_text,
-                Toast.LENGTH_LONG
-            )
-                .show()
-        } else {
-            selectedDate?.let {
-                events[it] =
-                    events[it].orEmpty().plus(Event(UUID.randomUUID().toString(), text, it))
-                updateAdapterForDate(it)
-            }
-        }
-    }
+//    private fun saveEvent(text: String) {
+//        if (text.isBlank()) {
+//            Toast.makeText(
+//                this@CalendarActivity,
+//                R.string.example_3_empty_input_text,
+//                Toast.LENGTH_LONG
+//            )
+//                .show()
+//        } else {
+//            selectedDate?.let {
+//                calendarDatas[it] =
+//                    calendarDatas[it].orEmpty().plus(Event(UUID.randomUUID().toString(), text, it))
+//                updateAdapterForDate(it)
+//            }
+//        }
+//    }
 
 
     private fun configureBinders(daysOfWeek: List<DayOfWeek>) {
@@ -287,24 +327,40 @@ class CalendarActivity : AppCompatActivity() {
                 if (data.position == DayPosition.MonthDate) {
                     textView.makeVisible()
                     dotLayout.removeAllViews()
-                    val eventList = events[data.date]
-                    eventList?.forEachIndexed {index,event ->
-                        dotLayout.addView(createBtn(binding.root.context,index,event.text))
+                    val calendarDataList = calendarDatas[data.date]
+                    calendarDataList?.forEachIndexed { index, calendarData ->
+                        dotLayout.addView(
+                            createBtn(
+                                binding.root.context,
+                                index,
+                                calendarDatas.toString()
+                            )
+                        )
                     }
                     when (data.date) {
                         today -> {
                             textView.setTextColorRes(R.color.example_3_white)
-                            textView.setBackgroundColor(resources.getColor(R.color.example_3_blue,null))
+                            textView.setBackgroundColor(
+                                resources.getColor(
+                                    R.color.example_3_blue,
+                                    null
+                                )
+                            )
                         }
 
                         selectedDate -> {
                             textView.setTextColorRes(R.color.example_3_blue)
-                            textView.setBackgroundColor(resources.getColor(R.color.example_3_blue_light,null))
+                            textView.setBackgroundColor(
+                                resources.getColor(
+                                    R.color.example_3_blue_light,
+                                    null
+                                )
+                            )
                         }
 
                         else -> {
                             textView.setTextColorRes(R.color.example_3_black)
-                            textView.background =null
+                            textView.background = null
                         }
                     }
                 } else {
@@ -312,18 +368,27 @@ class CalendarActivity : AppCompatActivity() {
 //                    dotView.makeInVisible()
                 }
             }
-            fun createBtn(context: Context,index:Int,content:String): View {
+
+            fun createBtn(context: Context, index: Int, content: String): View {
                 val textView = TextView(context)
-                val dp = context.resources.displayMetrics.density+0.5f
-                val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                     setMargins(5,5,5,0)
+                val dp = context.resources.displayMetrics.density + 0.5f
+                val lp = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(5, 5, 5, 0)
                 }
                 textView.apply {
                     text = content
-                    setTextColor(resources.getColor(R.color.white,null))
-                    textSize = 2*dp
+                    setTextColor(resources.getColor(R.color.white, null))
+                    textSize = 2 * dp
                     layoutParams = lp
-                    setBackgroundColor(resources.getColor(colorList[index%(colorList.size-1)],null))
+                    setBackgroundColor(
+                        resources.getColor(
+                            colorList[index % (colorList.size - 1)],
+                            null
+                        )
+                    )
 //                    setBackgroundResource(R.drawable.example_3_today_bg)
                     id = ViewCompat.generateViewId()
                 }
@@ -353,12 +418,12 @@ class CalendarActivity : AppCompatActivity() {
 }
 
 
-data class Event(val id: String, val text: String, val date: LocalDate)
+//data class Event(val id: String, val text: String, val date: LocalDate)
 
-class Example3EventsAdapter(val onClick: (Event) -> Unit) :
+class Example3EventsAdapter(val onClick: (CalendarData) -> Unit) :
     RecyclerView.Adapter<Example3EventsAdapter.Example3EventsViewHolder>() {
 
-    val events = mutableListOf<Event>()
+    val calendarDatas = mutableListOf<CalendarData>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Example3EventsViewHolder {
         return Example3EventsViewHolder(
@@ -371,22 +436,22 @@ class Example3EventsAdapter(val onClick: (Event) -> Unit) :
     }
 
     override fun onBindViewHolder(viewHolder: Example3EventsViewHolder, position: Int) {
-        viewHolder.bind(events[position])
+        viewHolder.bind(calendarDatas[position])
     }
 
-    override fun getItemCount(): Int = events.size
+    override fun getItemCount(): Int = calendarDatas.size
 
     inner class Example3EventsViewHolder(private val binding: Example3EventItemViewBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         init {
             itemView.setOnClickListener {
-                onClick(events[bindingAdapterPosition])
+                onClick(calendarDatas[bindingAdapterPosition])
             }
         }
 
-        fun bind(event: Event) {
-            binding.itemEventText.text = event.text
+        fun bind(calendarData: CalendarData) {
+            binding.itemEventText.text = calendarData.toString()
         }
     }
 }

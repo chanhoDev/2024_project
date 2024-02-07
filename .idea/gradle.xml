@@ -17,8 +17,10 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/calendar" />
             <option value="$PROJECT_DIR$/common" />
+            <option value="$PROJECT_DIR$/demo" />
             <option value="$PROJECT_DIR$/graph" />
             <option value="$PROJECT_DIR$/imagerolling" />
+            <option value="$PROJECT_DIR$/motion" />
           </set>
         </option>
       </GradleProjectSettings>
