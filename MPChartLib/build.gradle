@@ -10,7 +10,7 @@ android {
     defaultConfig {
         //noinspection MinSdkTooLow
         minSdkVersion 9
-        targetSdkVersion 34
+        targetSdkVersion 33
         versionCode 3
         versionName '3.0.3'
     }

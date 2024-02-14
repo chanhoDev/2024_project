@@ -5,6 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 object Constants {
+    const val FORE_CHANNEL_ID = "foreNotification"
     const val WAPLAT_PACKAGE_NAME = "com.nhn.waplat"
 
     const val PURCHASE_USER_RESULT = "purchaseUserResult"
