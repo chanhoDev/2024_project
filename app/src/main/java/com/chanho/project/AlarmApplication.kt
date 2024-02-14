@@ -1,6 +1,9 @@
 package com.chanho.project
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -31,8 +34,20 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 @HiltAndroidApp
 class AlarmApplication : Application(){
+
     override fun onCreate() {
         super.onCreate()
         PrefHelper.init(this)
+        if(Build.VERSION.SDK_INT >=Build.VERSION_CODES.O){
+            getSystemService(NotificationManager::class.java).run {
+                val forChannel = NotificationChannel(
+                    Constants.FORE_CHANNEL_ID,
+                    "Foreground",
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+                createNotificationChannel(forChannel)
+            }
+        }
+
     }
 }

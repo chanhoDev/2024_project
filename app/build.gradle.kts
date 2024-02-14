@@ -16,7 +16,7 @@ android {
     defaultConfig {
         applicationId = "com.chanho.project"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 2
         versionName = "1.0"
 
