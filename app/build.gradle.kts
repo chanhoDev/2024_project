@@ -63,6 +63,7 @@ dependencies {
     implementation(project(mapOf("path" to ":Localization")))
     implementation(project(mapOf("path" to ":graph")))
     implementation(project(mapOf("path" to ":motion")))
+    implementation(project(mapOf("path" to ":camera")))
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

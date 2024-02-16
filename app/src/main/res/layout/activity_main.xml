@@ -16,35 +16,48 @@
             android:id="@+id/alarm_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="10dp"
             android:text="알림" />
 
         <Button
             android:id="@+id/db_localization_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="10dp"
             android:text="로컬디비,현지화" />
 
         <Button
             android:id="@+id/calendar_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="10dp"
             android:text="캘린더" />
 
         <Button
             android:id="@+id/graph_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="10dp"
             android:text="그래프" />
 
         <Button
             android:id="@+id/motion_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="10dp"
             android:text="움직임 감지" />
+
+        <Button
+            android:id="@+id/camera_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="10dp"
+            android:text="카메라 테스트 " />
     </LinearLayout>
 </ScrollView>

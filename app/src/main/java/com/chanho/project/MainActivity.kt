@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.chanho.calendar.CalendarActivity
+import com.chanho.camera.CameraActivity
 import com.chanho.graph.GraphActivity
 import com.chanho.localization.LocalizationActivity
 import com.chanho.motion.MotionActivity
@@ -36,6 +37,10 @@ class MainActivity : AppCompatActivity() {
         }
         binding.motionBtn.setOnClickListener {
             val intent = Intent(this, MotionActivity::class.java)
+            startActivity(intent)
+        }
+        binding.cameraBtn.setOnClickListener {
+            val intent = Intent(this, CameraActivity::class.java)
             startActivity(intent)
         }
 
