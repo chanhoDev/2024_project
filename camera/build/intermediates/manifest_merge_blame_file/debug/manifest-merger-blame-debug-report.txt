@@ -1,0 +1,33 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.chanho.camera" >
+4
+5    <uses-sdk android:minSdkVersion="26" />
+6
+7    <!-- Permission declarations -->
+8    <uses-permission android:name="android.permission.CAMERA" />
+8-->/Users/nhn/Documents/private_project/camera/src/main/AndroidManifest.xml:5:5-65
+8-->/Users/nhn/Documents/private_project/camera/src/main/AndroidManifest.xml:5:22-62
+9
+10    <!-- A camera with (optional) RAW capability is required to use this application -->
+11    <uses-feature android:name="android.hardware.camera.any" />
+11-->/Users/nhn/Documents/private_project/camera/src/main/AndroidManifest.xml:8:5-64
+11-->/Users/nhn/Documents/private_project/camera/src/main/AndroidManifest.xml:8:19-61
+12    <uses-feature
+12-->/Users/nhn/Documents/private_project/camera/src/main/AndroidManifest.xml:9:5-89
+13        android:name="android.hardware.camera.raw"
+13-->/Users/nhn/Documents/private_project/camera/src/main/AndroidManifest.xml:9:19-61
+14        android:required="false" />
+14-->/Users/nhn/Documents/private_project/camera/src/main/AndroidManifest.xml:9:62-86
+15
+16    <application>
+16-->/Users/nhn/Documents/private_project/camera/src/main/AndroidManifest.xml:10:5-14:19
+17        <activity
+17-->/Users/nhn/Documents/private_project/camera/src/main/AndroidManifest.xml:11:9-13:40
+18            android:name="com.chanho.camera.CameraActivity"
+18-->/Users/nhn/Documents/private_project/camera/src/main/AndroidManifest.xml:12:13-43
+19            android:exported="false" />
+19-->/Users/nhn/Documents/private_project/camera/src/main/AndroidManifest.xml:13:13-37
+20    </application>
+21
+22</manifest>

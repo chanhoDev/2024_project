@@ -50,24 +50,44 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/display_text3"
-        app:layout_constraintBottom_toTopOf="@id/service_btn"/>
+        app:layout_constraintBottom_toTopOf="@id/download_worker_btn"/>
 
     <Button
-        android:id="@+id/service_btn"
+        android:id="@+id/download_worker_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20dp"
-        android:text="실행"
+        android:text="다운로드_워커실행"
         app:layout_constraintTop_toBottomOf="@id/display_text4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
     <Button
-        android:id="@+id/service_stop_btn"
+        android:id="@+id/period_worker_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20dp"
-        android:text="실행정지"
-        app:layout_constraintTop_toBottomOf="@id/service_btn"
+        android:text="주기적인_워커실행"
+        app:layout_constraintTop_toBottomOf="@id/download_worker_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/download_worker_stop_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="다운로드_워커중단"
+        app:layout_constraintTop_toBottomOf="@id/period_worker_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/period_worker_stop_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="주기적인_워커중단"
+        app:layout_constraintTop_toBottomOf="@id/download_worker_stop_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 

@@ -10,6 +10,9 @@
         <service android:name=".MotionService"
             android:exported="true">
         </service>
+        <service android:name=".GyroScopeMotionService"
+            android:exported="true">
+        </service>
         <receiver
             android:name=".BootReceiver"
             android:enabled="true"
