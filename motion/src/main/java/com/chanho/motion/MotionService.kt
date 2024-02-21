@@ -16,7 +16,6 @@ import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import com.chanho.common.Constants
 import com.chanho.common.PrefHelper
 import kotlinx.coroutines.GlobalScope
@@ -75,11 +74,12 @@ class MotionService : Service(), SensorEventListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e("motionService", "onDestroy!!")
+        Log.e("motionService", "onDestroy!! shakeCount = $shakeCount")
         sensorManager.unregisterListener(this)
+        PrefHelper[SHAKE_COUNT] = shakeCount
 //        val intent = Intent(this, MotionService::class.java)
 //        ContextCompat.startForegroundService(this, intent)
-        callAlarmManager()
+//        callAlarmManager()
     }
 
     override fun onSensorChanged(p0: SensorEvent?) {
@@ -149,3 +149,4 @@ class RestartAlarmReceiver : BroadcastReceiver() {
     }
 
 }
+

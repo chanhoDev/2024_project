@@ -1,0 +1,2 @@
+com.chanho.camera
+layout activity_camera
