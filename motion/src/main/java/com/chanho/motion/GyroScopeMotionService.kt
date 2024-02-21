@@ -1,29 +1,42 @@
 package com.chanho.motion
 
+import android.app.AlarmManager
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.chanho.common.AlarmFunctions
+import com.chanho.common.AlarmReceiver
 import com.chanho.common.Constants
 import com.chanho.common.PrefHelper
 import com.chanho.common.Util
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.lang.Exception
+import java.text.ParseException
 import java.util.Calendar
+import java.util.Date
 
 
+const val GYRO_SERVICE=3
 class GyroScopeMotionService : Service(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private lateinit var gyroscopeSensor: Sensor
+    lateinit var notiBuilder: NotificationCompat.Builder
 
     //roll and pitch
     var timeStamp: Double = 0.0
@@ -36,9 +49,10 @@ class GyroScopeMotionService : Service(), SensorEventListener {
 
     override fun onCreate() {
         super.onCreate()
-        Log.e("GyroScopeMotionService","start")
+        Log.e("GyroScopeMotionService", "start")
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) as Sensor
+
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -46,9 +60,35 @@ class GyroScopeMotionService : Service(), SensorEventListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        sensorManager.registerListener(this, gyroscopeSensor, SensorManager.SENSOR_DELAY_UI)
-        return START_NOT_STICKY
+        sensorManager.registerListener(this, gyroscopeSensor, SensorManager.SENSOR_DELAY_NORMAL)
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                stopForeground(true)
+//            } else {
+//                stopSelf()
+//            }
+//        }, 5000)
 
+        val intent = Intent(this, MotionActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0, intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        notiBuilder = NotificationCompat.Builder(this, Constants.FORE_CHANNEL_ID)
+            .setContentTitle("forground")
+            .setContentText("pitch = ${String.format("%.1f", pitch * RAD2DGR)}, roll = ${String.format("%.1f", roll * RAD2DGR)} yaw = ${String.format("%.1f", yaw * RAD2DGR)}")
+            .setOnlyAlertOnce(true)
+            .setSmallIcon(com.chanho.common.R.drawable.ic_launcher_waplat)
+            .setContentIntent(pendingIntent)
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(GYRO_SERVICE, notiBuilder.build())
+        } else {
+            startForeground(GYRO_SERVICE, notiBuilder.build(), foregroundServiceType)
+        }
+
+        return START_STICKY
     }
 
     override fun onSensorChanged(p0: SensorEvent?) {
@@ -81,7 +121,15 @@ class GyroScopeMotionService : Service(), SensorEventListener {
                             + "           [Yaw]: " + String.format("%.1f", yaw * RAD2DGR)
                             + "           [dt]: " + String.format("%.4f", dt)
                 )
+                GlobalScope.launch {
+                    val manager = getSystemService(NotificationManager::class.java)
+                    notiBuilder.setContentText("pitch = ${String.format("%.1f", pitch * RAD2DGR)}, roll = ${String.format("%.1f", roll * RAD2DGR)} yaw = ${String.format("%.1f", yaw * RAD2DGR)}")
+                    manager.notify(GYRO_SERVICE, notiBuilder.build())
+                    manager.cancel(GYRO_SERVICE)
+                }
+                Thread.sleep(500)
             }
+
         }
     }
 
@@ -90,21 +138,54 @@ class GyroScopeMotionService : Service(), SensorEventListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        var setString:Set<String> = PrefHelper[GYROSCOPE, setOf<String>()]
+        var setString: Set<String> = PrefHelper[GYROSCOPE, setOf<String>()]
         val cal = Calendar.getInstance()
         val time = Util.dateFormat.format(cal.time)
         val resultPitch = String.format("%.1f", pitch * RAD2DGR)
         val resultRoll = String.format("%.1f", roll * RAD2DGR)
         val resultYaw = String.format("%.1f", yaw * RAD2DGR)
-        setString = setString.plus("[time=$time,pitch=$resultPitch//roll=$resultRoll//yaw=$resultYaw]")
+        setString =
+            setString.plus("[time=$time,pitch=$resultPitch//roll=$resultRoll//yaw=$resultYaw]")
         PrefHelper[GYROSCOPE] = setString
         sensorManager.unregisterListener(this)
-        Log.e("GyroScopeMotionService","finish ${PrefHelper[GYROSCOPE, setOf<String>()]}")
+        Log.e("GyroScopeMotionService", "finish ${PrefHelper[GYROSCOPE, setOf<String>()]}")
+        val alarmManager =
+            applicationContext.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+        val receiverIntent = Intent(applicationContext, RestartGyroReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            applicationContext,
+            0,
+            receiverIntent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT else PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        cal.set(Calendar.SECOND,3)
+
+
+        alarmManager?.setAlarmClock(
+            AlarmManager.AlarmClockInfo(cal.timeInMillis, null),
+            pendingIntent
+        )
     }
 
-    companion object{
-        val GYROSCOPE = "gyroscope5"
+    companion object {
+        val GYROSCOPE = "gyroscope"
+
     }
 
 }
+
+class RestartGyroReceiver : BroadcastReceiver() {
+    override fun onReceive(p0: Context?, p1: Intent?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val intent = Intent(p0, GyroScopeMotionService::class.java)
+            p0?.startForegroundService(intent)
+        } else {
+            val intent = Intent(p0, GyroScopeMotionService::class.java)
+            p0?.startService(intent)
+        }
+        Toast.makeText(p0, "restart GyroScopeMotionService", Toast.LENGTH_SHORT).show()
+    }
+
+}
+
 
