@@ -119,6 +119,6 @@ class UserActivityBroadCastReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        val DETECT = "detect_version_15:53"
+        val DETECT = "detect_version_2.22.10:25"
     }
 }

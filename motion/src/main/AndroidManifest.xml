@@ -1,24 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- API 버전 28 이하 -->
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <!-- API 버전 29 이상 -->
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
 
-    <application
-        android:allowBackup="true">
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
+    <application android:allowBackup="true">
         <activity
             android:name=".MotionActivity"
             android:exported="false" />
-        <service android:name=".MotionService"
+
+        <service
+            android:name=".MotionService"
             android:enabled="true"
-            android:exported="true">
-        </service>
-        <service android:name=".GyroScopeMotionService"
-            android:exported="true">
-        </service>
+            android:exported="true"></service>
+        <service
+            android:name=".ScreenLockService"
+            android:enabled="true"
+            android:exported="true"></service>
+        <service
+            android:name=".GyroScopeMotionService"
+            android:exported="true"></service>
+
         <receiver
             android:name=".BootReceiver"
             android:enabled="true"
@@ -28,16 +38,27 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".RestartAlarmReceiver"
+        <receiver
+            android:name=".RestartAlarmReceiver"
             android:enabled="true"
-            android:exported="true"/>
-        <receiver android:name=".RestartGyroReceiver"
+            android:exported="true" />
+        <receiver
+            android:name=".RestartGyroReceiver"
             android:enabled="true"
-            android:exported="true"/>
-        <receiver android:name=".UserActivityBroadCastReceiver"
+            android:exported="true" />
+        <receiver
+            android:name=".UserActivityBroadCastReceiver"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
 
+        <receiver
+            android:name=".ScreenLockBroadCastReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
