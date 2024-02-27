@@ -25,7 +25,6 @@ import java.util.Calendar
 const val SERVICE_ID = 2
 
 class MotionService : Service(), SensorEventListener {
-
     private var shakeTime = 0L
     private var shakeCount = 0
     lateinit var notiBuilder: NotificationCompat.Builder
@@ -38,7 +37,6 @@ class MotionService : Service(), SensorEventListener {
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         acceleroMeter = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) as Sensor
         acceleroMeterGravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) as Sensor
-
     }
 
     override fun onBind(p0: Intent?): IBinder? {
