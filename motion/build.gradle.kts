@@ -63,6 +63,8 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation(project(mapOf("path" to ":common")))
 
+    implementation ("com.squareup.retrofit2:converter-gson:2.6.4")
+
 }
 
 // Allow references to generated code

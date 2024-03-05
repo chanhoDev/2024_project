@@ -29,9 +29,12 @@ import java.lang.Exception
 import java.text.ParseException
 import java.util.Calendar
 import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 
 
-const val GYRO_SERVICE=3
+const val GYRO_SERVICE = 3
+
 class GyroScopeMotionService : Service(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
@@ -47,11 +50,64 @@ class GyroScopeMotionService : Service(), SensorEventListener {
     var roll: Double = 0.0 //x축
     var yaw: Double = 0.0// z축
 
+    var timeSecond = 10
+    val timer = Timer()
+
     override fun onCreate() {
         super.onCreate()
         Log.e("GyroScopeMotionService", "start")
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) as Sensor
+        timeSecond =10
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                Thread.sleep(1000)
+                timeSecond--
+                if (timeSecond <= 0) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        stopForeground(true)
+                    } else {
+                        stopSelf()
+                    }
+                    sensorManager.unregisterListener(this@GyroScopeMotionService)
+                    timer.cancel()
+                }else{
+                    GlobalScope.launch {
+                        val manager = getSystemService(NotificationManager::class.java)
+                        notiBuilder.setContentText(
+                            "pitch = ${
+                                String.format(
+                                    "%.1f",
+                                    pitch * RAD2DGR
+                                )
+                            }, roll = ${String.format("%.1f", roll * RAD2DGR)} yaw = ${
+                                String.format(
+                                    "%.1f",
+                                    yaw * RAD2DGR
+                                )
+                            }"
+                        )
+                        manager.notify(GYRO_SERVICE, notiBuilder.build())
+                        manager.cancel(GYRO_SERVICE)
+                        Log.e(
+                            "LOG",  "pitch = ${
+                                String.format(
+                                    "%.1f",
+                                    pitch * RAD2DGR
+                                )
+                            }, roll = ${String.format("%.1f", roll * RAD2DGR)} yaw = ${
+                                String.format(
+                                    "%.1f",
+                                    yaw * RAD2DGR
+                                )
+                            }"
+                        )
+                    }
+                }
+                Log.e("타이머", "timeSecond = $timeSecond")
+            }
+        }, 0, 10000)
+
 
     }
 
@@ -77,7 +133,19 @@ class GyroScopeMotionService : Service(), SensorEventListener {
         )
         notiBuilder = NotificationCompat.Builder(this, Constants.FORE_CHANNEL_ID)
             .setContentTitle("forground")
-            .setContentText("pitch = ${String.format("%.1f", pitch * RAD2DGR)}, roll = ${String.format("%.1f", roll * RAD2DGR)} yaw = ${String.format("%.1f", yaw * RAD2DGR)}")
+            .setContentText(
+                "pitch = ${
+                    String.format(
+                        "%.1f",
+                        pitch * RAD2DGR
+                    )
+                }, roll = ${String.format("%.1f", roll * RAD2DGR)} yaw = ${
+                    String.format(
+                        "%.1f",
+                        yaw * RAD2DGR
+                    )
+                }"
+            )
             .setOnlyAlertOnce(true)
             .setSmallIcon(com.chanho.common.R.drawable.ic_launcher_waplat)
             .setContentIntent(pendingIntent)
@@ -87,7 +155,6 @@ class GyroScopeMotionService : Service(), SensorEventListener {
         } else {
             startForeground(GYRO_SERVICE, notiBuilder.build(), foregroundServiceType)
         }
-
         return START_STICKY
     }
 
@@ -112,24 +179,17 @@ class GyroScopeMotionService : Service(), SensorEventListener {
                 roll += gyroX * dt
                 yaw += gyroZ * dt
 
-                Log.e(
-                    "LOG", "GYROSCOPE           [X]:" + String.format("%.4f", event.values[0])
-                            + "           [Y]:" + String.format("%.4f", event.values[1])
-                            + "           [Z]:" + String.format("%.4f", event.values[2])
-                            + "           [Pitch]: " + String.format("%.1f", pitch * RAD2DGR)
-                            + "           [Roll]: " + String.format("%.1f", roll * RAD2DGR)
-                            + "           [Yaw]: " + String.format("%.1f", yaw * RAD2DGR)
-                            + "           [dt]: " + String.format("%.4f", dt)
-                )
-                GlobalScope.launch {
-                    val manager = getSystemService(NotificationManager::class.java)
-                    notiBuilder.setContentText("pitch = ${String.format("%.1f", pitch * RAD2DGR)}, roll = ${String.format("%.1f", roll * RAD2DGR)} yaw = ${String.format("%.1f", yaw * RAD2DGR)}")
-                    manager.notify(GYRO_SERVICE, notiBuilder.build())
-                    manager.cancel(GYRO_SERVICE)
-                }
-                Thread.sleep(500)
-            }
+//                Log.e(
+//                    "LOG", "GYROSCOPE           [X]:" + String.format("%.4f", event.values[0])
+//                            + "           [Y]:" + String.format("%.4f", event.values[1])
+//                            + "           [Z]:" + String.format("%.4f", event.values[2])
+//                            + "           [Pitch]: " + String.format("%.1f", pitch * RAD2DGR)
+//                            + "           [Roll]: " + String.format("%.1f", roll * RAD2DGR)
+//                            + "           [Yaw]: " + String.format("%.1f", yaw * RAD2DGR)
+//                            + "           [dt]: " + String.format("%.4f", dt)
+//                )
 
+            }
         }
     }
 
@@ -158,7 +218,7 @@ class GyroScopeMotionService : Service(), SensorEventListener {
             receiverIntent,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT else PendingIntent.FLAG_UPDATE_CURRENT
         )
-        cal.set(Calendar.SECOND,3)
+        cal.set(Calendar.SECOND, 10)
 
 
         alarmManager?.setAlarmClock(

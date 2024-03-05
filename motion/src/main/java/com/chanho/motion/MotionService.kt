@@ -21,6 +21,8 @@ import com.chanho.common.PrefHelper
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.Timer
+import java.util.TimerTask
 
 const val SERVICE_ID = 2
 
@@ -31,12 +33,31 @@ class MotionService : Service(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private lateinit var acceleroMeter: Sensor
     private lateinit var acceleroMeterGravity: Sensor
+    var timeSecond = 10
+    val timer = Timer()
 
     override fun onCreate() {
         super.onCreate()
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         acceleroMeter = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) as Sensor
         acceleroMeterGravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) as Sensor
+        timeSecond =10
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                Thread.sleep(1000)
+                timeSecond--
+                if (timeSecond <= 0) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        stopForeground(true)
+                    } else {
+                        stopSelf()
+                    }
+                    sensorManager.unregisterListener(this@MotionService)
+                    timer.cancel()
+                }
+                Log.e("타이머", "timeSecond = $timeSecond")
+            }
+        }, 0, 10000)
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -77,7 +98,7 @@ class MotionService : Service(), SensorEventListener {
         PrefHelper[SHAKE_COUNT] = shakeCount
 //        val intent = Intent(this, MotionService::class.java)
 //        ContextCompat.startForegroundService(this, intent)
-//        callAlarmManager()
+        callAlarmManager()
     }
 
     override fun onSensorChanged(p0: SensorEvent?) {
@@ -117,7 +138,7 @@ class MotionService : Service(), SensorEventListener {
     private fun callAlarmManager(){
         val cal = Calendar.getInstance()
         cal.timeInMillis = System.currentTimeMillis()
-        cal.add(Calendar.SECOND,3)
+        cal.add(Calendar.SECOND,10)
         val intent = Intent(this,RestartAlarmReceiver::class.java)
         val sender = PendingIntent.getBroadcast(this,0,intent, PendingIntent.FLAG_IMMUTABLE)
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
