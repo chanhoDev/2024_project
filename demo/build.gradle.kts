@@ -54,6 +54,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation(project(":calendar"))
     implementation(project(":Localization"))
+    implementation(project(":motion"))
+
 
     //hilt
     implementation("com.google.dagger:hilt-android:2.44")

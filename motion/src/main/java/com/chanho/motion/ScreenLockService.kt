@@ -36,7 +36,7 @@ class ScreenLockService : Service() {
         super.onCreate()
         val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
         intentFilter.addAction(Intent.ACTION_USER_PRESENT)
-//        intentFilter.addAction(Intent.ACTION_SCREEN_OFF)
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF)
         receiver = ScreenLockBroadCastReceiver()
         registerReceiver(receiver, intentFilter)
     }
@@ -46,11 +46,6 @@ class ScreenLockService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val intentFilter = IntentFilter(Intent.ACTION_SCREEN_ON)
-        intentFilter.addAction(Intent.ACTION_USER_PRESENT)
-        receiver = ScreenLockBroadCastReceiver()
-        registerReceiver(receiver, intentFilter)
-
         val intent = Intent(this, MotionActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             this,

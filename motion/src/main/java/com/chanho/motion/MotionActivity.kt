@@ -83,6 +83,14 @@ class MotionActivity : AppCompatActivity() {
                 val intent = Intent(this@MotionActivity, MotionService::class.java)
                 startForegroundService(intent)
             }
+            motionServiceBtnA.setOnClickListener {
+                val intent = Intent(this@MotionActivity, MotionServiceA::class.java)
+                startForegroundService(intent)
+            }
+            motionServiceBtnB.setOnClickListener {
+                val intent = Intent(this@MotionActivity, MotionServiceB::class.java)
+                startForegroundService(intent)
+            }
             lockScreenBtn.setOnClickListener {
                 //잠금화면 활성화 클릭 이벤트 처리1
 //                setPeriodTimeWorkerScreenLock(this@MotionActivity)

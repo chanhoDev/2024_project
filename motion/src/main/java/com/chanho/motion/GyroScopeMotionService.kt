@@ -58,17 +58,45 @@ class GyroScopeMotionService : Service(), SensorEventListener {
         Log.e("GyroScopeMotionService", "start")
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) as Sensor
+
+        val intent = Intent(this, MotionActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0, intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        notiBuilder = NotificationCompat.Builder(this, Constants.FORE_CHANNEL_ID)
+            .setContentTitle("forground")
+            .setContentText(
+                "pitch = ${
+                    String.format(
+                        "%.1f",
+                        pitch * RAD2DGR
+                    )
+                }, roll = ${String.format("%.1f", roll * RAD2DGR)} yaw = ${
+                    String.format(
+                        "%.1f",
+                        yaw * RAD2DGR
+                    )
+                }"
+            )
+            .setOnlyAlertOnce(true)
+            .setSmallIcon(com.chanho.common.R.drawable.ic_launcher_waplat)
+            .setContentIntent(pendingIntent)
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(GYRO_SERVICE, notiBuilder.build())
+        } else {
+            startForeground(GYRO_SERVICE, notiBuilder.build(), foregroundServiceType)
+        }
+
         timeSecond =10
         timer.schedule(object : TimerTask() {
             override fun run() {
-                Thread.sleep(1000)
                 timeSecond--
                 if (timeSecond <= 0) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        stopForeground(true)
-                    } else {
-                        stopSelf()
-                    }
+                    this@GyroScopeMotionService.stopService(Intent(this@GyroScopeMotionService,GyroScopeMotionService::class.java))
+                    timer.cancel()
                     sensorManager.unregisterListener(this@GyroScopeMotionService)
                     timer.cancel()
                 }else{
@@ -106,7 +134,7 @@ class GyroScopeMotionService : Service(), SensorEventListener {
                 }
                 Log.e("타이머", "timeSecond = $timeSecond")
             }
-        }, 0, 10000)
+        }, 0, 1000)
 
 
     }
@@ -125,36 +153,7 @@ class GyroScopeMotionService : Service(), SensorEventListener {
 //            }
 //        }, 5000)
 
-        val intent = Intent(this, MotionActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0, intent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
-        notiBuilder = NotificationCompat.Builder(this, Constants.FORE_CHANNEL_ID)
-            .setContentTitle("forground")
-            .setContentText(
-                "pitch = ${
-                    String.format(
-                        "%.1f",
-                        pitch * RAD2DGR
-                    )
-                }, roll = ${String.format("%.1f", roll * RAD2DGR)} yaw = ${
-                    String.format(
-                        "%.1f",
-                        yaw * RAD2DGR
-                    )
-                }"
-            )
-            .setOnlyAlertOnce(true)
-            .setSmallIcon(com.chanho.common.R.drawable.ic_launcher_waplat)
-            .setContentIntent(pendingIntent)
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(GYRO_SERVICE, notiBuilder.build())
-        } else {
-            startForeground(GYRO_SERVICE, notiBuilder.build(), foregroundServiceType)
-        }
         return START_STICKY
     }
 

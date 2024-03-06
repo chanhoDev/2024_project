@@ -25,17 +25,21 @@ class ScreenLockBroadCastReceiver : BroadcastReceiver() {
             Log.e("사용자", "잠금설정이 되어있음 ")
             notiBuilder.setContentTitle("잠금설정이 되어있음")
             if (intent.action.equals(Intent.ACTION_USER_PRESENT)) {
-//            Toast.makeText(context,"ACTION_USER_PRESENT",Toast.LENGTH_SHORT).show()
                 Log.e("사용자", "ACTION_USER_PRESENT")
-                notiBuilder.setContentText("ACTION_USER_PRESENT")
-                manager.notify(SERVICE_ID3, notiBuilder.build())
-//            manager.cancel(SERVICE_ID3)
             }
+            notiBuilder.setContentText("ACTION_USER_PRESENT")
+            manager.notify(SERVICE_ID3, notiBuilder.build())
         } else {
             Log.e("사용자", "잠금설정이 안되어있음 !")
             notiBuilder.setContentTitle("잠금설정이 안되어있음")
             notiBuilder.setContentText("잠금설정이 안되어있음")
             manager.notify(SERVICE_ID3, notiBuilder.build())
+        }
+
+        if (intent.action.equals(Intent.ACTION_SCREEN_ON)) {
+            val lockIntent = Intent(context,LockScreenActivity::class.java)
+            lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(lockIntent)
         }
     }
 }
