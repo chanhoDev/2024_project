@@ -8,6 +8,7 @@ import com.chanho.graph.GraphActivity
 import com.chanho.localization.LocalizationActivity
 import com.chanho.motion.MotionActivity
 import com.chanho.project.databinding.ActivityMainBinding
+import com.chanho.widget.NewAppWidgetConfigureActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,6 +39,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, MotionActivity::class.java)
             startActivity(intent)
         }
+        binding.widgetBtn.setOnClickListener {
+            val intent = Intent(this, NewAppWidgetConfigureActivity::class.java)
+            startActivity(intent)
+        }
+
 
     }
 

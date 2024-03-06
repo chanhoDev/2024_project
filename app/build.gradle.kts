@@ -56,6 +56,7 @@ dependencies {
     implementation(project(":alarm"))
     implementation(project(":calendar"))
     implementation(project(":imagerolling"))
+    implementation(project(":widget"))
 
     implementation("androidx.room:room-ktx:2.6.1")
     implementation(project(mapOf("path" to ":common")))

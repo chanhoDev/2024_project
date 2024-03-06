@@ -23,6 +23,7 @@
             <option value="$PROJECT_DIR$/graph" />
             <option value="$PROJECT_DIR$/imagerolling" />
             <option value="$PROJECT_DIR$/motion" />
+            <option value="$PROJECT_DIR$/widget" />
           </set>
         </option>
       </GradleProjectSettings>
