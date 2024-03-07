@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.chanho.calendar.CalendarActivity
 import com.chanho.graph.GraphActivity
+import com.chanho.jetpackcompose.ComposeMainActivity
 import com.chanho.localization.LocalizationActivity
 import com.chanho.motion.MotionActivity
 import com.chanho.project.databinding.ActivityMainBinding
@@ -38,7 +39,10 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, MotionActivity::class.java)
             startActivity(intent)
         }
-
+        binding.composeTestBtn.setOnClickListener {
+            val intent = Intent(this, ComposeMainActivity::class.java)
+            startActivity(intent)
+        }
     }
 
 }

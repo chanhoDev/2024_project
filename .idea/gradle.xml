@@ -22,6 +22,9 @@
             <option value="$PROJECT_DIR$/demo_gyro" />
             <option value="$PROJECT_DIR$/graph" />
             <option value="$PROJECT_DIR$/imagerolling" />
+            <option value="$PROJECT_DIR$/jetpackcompose" />
+            <option value="$PROJECT_DIR$/jetpackcompose/core" />
+            <option value="$PROJECT_DIR$/jetpackcompose/core/data" />
             <option value="$PROJECT_DIR$/motion" />
           </set>
         </option>
