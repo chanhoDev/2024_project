@@ -1,9 +1,11 @@
 package com.chanho.motion
 
 import android.Manifest
+import android.app.AlarmManager
 import android.app.AppOpsManager
 import android.app.AppOpsManager.MODE_ALLOWED
 import android.app.AppOpsManager.OPSTR_GET_USAGE_STATS
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -116,6 +118,17 @@ class MotionActivity : AppCompatActivity() {
                     setPeriodTimeWorkerAppUsage(this@MotionActivity)
                 }
             }
+            periodPushAlarmCheckBtn.setOnClickListener {
+                //1분주기로 푸시알림을 발생한다
+                val cal = Calendar.getInstance()
+                cal.timeInMillis = System.currentTimeMillis()
+                cal.add(Calendar.MINUTE,1)
+                val intent = Intent(this@MotionActivity,PeriodPushBroadCastReceiver::class.java)
+                val sender = PendingIntent.getBroadcast(this@MotionActivity,0,intent, PendingIntent.FLAG_IMMUTABLE)
+                val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(cal.time.time,null),sender)
+            }
+
         }
     }
 

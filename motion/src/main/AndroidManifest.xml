@@ -68,6 +68,14 @@
             android:enabled="true"
             android:exported="true" />
         <receiver
+            android:name=".PeriodPushBroadCastReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".PeriodPushConfirmCheckReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
             android:name=".ScreenLockBroadCastReceiver"
             android:enabled="true"
             android:exported="true">
