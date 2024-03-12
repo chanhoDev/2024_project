@@ -17,14 +17,12 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/calendar" />
             <option value="$PROJECT_DIR$/common" />
+            <option value="$PROJECT_DIR$/compose" />
             <option value="$PROJECT_DIR$/demo" />
             <option value="$PROJECT_DIR$/demo2" />
             <option value="$PROJECT_DIR$/demo_gyro" />
             <option value="$PROJECT_DIR$/graph" />
             <option value="$PROJECT_DIR$/imagerolling" />
-            <option value="$PROJECT_DIR$/jetpackcompose" />
-            <option value="$PROJECT_DIR$/jetpackcompose/core" />
-            <option value="$PROJECT_DIR$/jetpackcompose/core/data" />
             <option value="$PROJECT_DIR$/motion" />
           </set>
         </option>
