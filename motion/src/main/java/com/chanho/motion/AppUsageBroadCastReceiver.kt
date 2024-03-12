@@ -148,7 +148,7 @@ class AppUsageBroadCastReceiver : BroadcastReceiver() {
                         )
                     }
                 }
-                if(usageEventList.map { it.eventType }.contains("KEYGUARD")){
+                if(usageEventList.map { it.eventType }.contains("KEYGUARD_HIDDEN") || usageEventList.map { it.eventType }.contains("KEYGUARD_SHOWN")){
                     //5분 후에 동작
                     val cal = Calendar.getInstance()
                     cal.timeInMillis = System.currentTimeMillis()
