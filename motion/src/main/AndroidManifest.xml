@@ -88,6 +88,10 @@
             android:enabled="true"
             android:exported="true" />
         <receiver
+            android:name=".TerminateSensorBroadCastReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
             android:name=".ScreenLockBroadCastReceiver"
             android:enabled="true"
             android:exported="true">

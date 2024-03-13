@@ -10,10 +10,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class TodoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContent{
-//            AppCompatTheme {
-//                TodoNavGraph()
-//            }
-//        }
+        setContent{
+            AppCompatTheme {
+                TodoNavGraph()
+            }
+        }
     }
 }

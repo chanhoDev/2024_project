@@ -33,25 +33,20 @@ class SensorService : Service(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private lateinit var acceleroMeter: Sensor
     private lateinit var acceleroMeterGravity: Sensor
-    var timeSecond = 10
-    val timer = Timer()
 
     override fun onCreate() {
         super.onCreate()
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         acceleroMeter = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) as Sensor
         acceleroMeterGravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) as Sensor
-        timeSecond =60*5
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                timeSecond--
-                if (timeSecond <= 0) {
-                    this@SensorService.stopService(Intent(this@SensorService,SensorService::class.java))
-                    timer.cancel()
-                }
-                Log.e("타이머C", "timeSecond = $timeSecond")
-            }
-        }, 0, 1000)
+        Log.e("SensorService","oncreate")
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = System.currentTimeMillis()
+        cal.add(Calendar.MINUTE,5)
+        val intent = Intent(this,TerminateSensorBroadCastReceiver::class.java)
+        val sender = PendingIntent.getBroadcast(this,0,intent, PendingIntent.FLAG_IMMUTABLE)
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(cal.time.time,null),sender)
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -131,9 +126,10 @@ class SensorService : Service(), SensorEventListener {
     }
 
     private fun callAlarmManager(){
+        Log.e("callAlarmManager","")
         val cal = Calendar.getInstance()
         cal.timeInMillis = System.currentTimeMillis()
-        cal.add(Calendar.SECOND,3)
+        cal.add(Calendar.MINUTE,5)
         val intent = Intent(this,SensorServiceAndUsageBroadCastReceiver::class.java)
         val sender = PendingIntent.getBroadcast(this,0,intent, PendingIntent.FLAG_IMMUTABLE)
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -148,4 +144,13 @@ class SensorService : Service(), SensorEventListener {
         val SHAKE_SKIP_TIME = 500
         val SHAKE_COUNT = "shakeCount"
     }
+}
+
+
+class TerminateSensorBroadCastReceiver():BroadcastReceiver(){
+    override fun onReceive(p0: Context?, p1: Intent?) {
+        Log.e("TerminateSensorBroadCastReceiver","받음")
+        p0?.stopService(Intent(p0,SensorService::class.java))
+    }
+
 }

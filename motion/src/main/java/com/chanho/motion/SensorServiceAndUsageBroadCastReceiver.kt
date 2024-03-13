@@ -7,6 +7,7 @@ import android.app.usage.UsageStatsManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.chanho.common.PrefHelper
 import com.chanho.common.Util
 import com.google.gson.Gson
@@ -157,6 +158,7 @@ class SensorServiceAndUsageBroadCastReceiver : BroadcastReceiver() {
 
                 }
                 //5분 후에 재시작
+                Log.e("SensorServiceAndUsageBroadCastReceiver","몇분뒤 재시작")
                 val cal = Calendar.getInstance()
                 cal.timeInMillis = System.currentTimeMillis()
                 cal.add(Calendar.MINUTE,5)
@@ -186,15 +188,3 @@ class SensorServiceAndUsageBroadCastReceiver : BroadcastReceiver() {
     )
 
 }
-
-// notification 알림을 클릭했을때 기능 동작하는 receiver
-//class PeriodPushConfirmCheckReceiver() : BroadcastReceiver() {
-//    override fun onReceive(p0: Context?, p1: Intent?) {
-//        Log.d("PeriodPushConfirmCheckReceiver", "onReceive 알림이 들어옴")
-//        Toast.makeText(p0,"PeriodPushConfirmCheckReceiver",Toast.LENGTH_SHORT).show()
-//        val cal = Calendar.getInstance()
-//        cal.timeInMillis = System.currentTimeMillis()
-//        PrefHelper["${Util.dateFormat.format(cal.time)}_PERIOD_PUSH_CONFIRM"] = "${Util.dateFormat.format(cal.time)}"
-//    }
-//
-//}
