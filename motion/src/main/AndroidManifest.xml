@@ -35,6 +35,10 @@
             android:enabled="true"
             android:exported="true" />
         <service
+            android:name=".MotionServiceChangeTime"
+            android:enabled="true"
+            android:exported="true" />
+        <service
             android:name=".SensorService"
             android:enabled="true"
             android:exported="true" />
@@ -69,6 +73,10 @@
             android:exported="true" />
         <receiver
             android:name=".RestartAlarmReceiverC"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".RestartAlarmReceiverChangeTime"
             android:enabled="true"
             android:exported="true" />
         <receiver
@@ -109,6 +117,10 @@
             android:exported="true" />
         <receiver
             android:name=".TerminateSensorBroadCastReceiverC"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".TerminateSensorBroadCastReceiverChageTime"
             android:enabled="true"
             android:exported="true" />
         <receiver
