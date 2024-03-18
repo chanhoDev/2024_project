@@ -32,25 +32,20 @@ class MotionServiceA : Service(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private lateinit var acceleroMeter: Sensor
     private lateinit var acceleroMeterGravity: Sensor
-    var timeSecond = 10
-    val timer = Timer()
 
     override fun onCreate() {
         super.onCreate()
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         acceleroMeter = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) as Sensor
         acceleroMeterGravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) as Sensor
-        timeSecond =60*5
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                timeSecond--
-                if (timeSecond <= 0) {
-                    this@MotionServiceA.stopService(Intent(this@MotionServiceA,MotionServiceA::class.java))
-                    timer.cancel()
-                }
-                Log.e("타이머A", "timeSecond = $timeSecond")
-            }
-        }, 0, 1000)
+        Log.e("SensorService","oncreate")
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = System.currentTimeMillis()
+        cal.add(Calendar.MINUTE,5)
+        val intent = Intent(this,TerminateSensorBroadCastReceiverA::class.java)
+        val sender = PendingIntent.getBroadcast(this,0,intent, PendingIntent.FLAG_IMMUTABLE)
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(cal.time.time,null),sender)
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -59,7 +54,6 @@ class MotionServiceA : Service(), SensorEventListener {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         sensorManager.registerListener(this, acceleroMeter, SensorManager.SENSOR_DELAY_NORMAL)
-        shakeCount = PrefHelper[SHAKE_COUNT, 0]
 
         val intent = Intent(this, MotionActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
@@ -88,7 +82,7 @@ class MotionServiceA : Service(), SensorEventListener {
         super.onDestroy()
         Log.e("motionService", "onDestroy!! shakeCount = $shakeCount")
         sensorManager.unregisterListener(this)
-        PrefHelper[SHAKE_COUNT] = shakeCount
+        PrefHelper[SHAKE_COUNT_A] = shakeCount
 //        val intent = Intent(this, MotionService::class.java)
 //        ContextCompat.startForegroundService(this, intent)
         callAlarmManager()
@@ -115,7 +109,6 @@ class MotionServiceA : Service(), SensorEventListener {
                     }
                     shakeTime = currentTime
                     shakeCount++
-                    PrefHelper[SHAKE_COUNT] = shakeCount
                     GlobalScope.launch {
                         val manager = getSystemService(NotificationManager::class.java)
                         notiBuilder.setContentText("진행상황:$shakeCount")
@@ -144,7 +137,7 @@ class MotionServiceA : Service(), SensorEventListener {
     companion object {
         val SHAKE_THRESHOLD_GRAVITY = 1.05F
         val SHAKE_SKIP_TIME = 500
-        val SHAKE_COUNT = "shakeCount"
+        val SHAKE_COUNT_A = "shakeCount_a"
     }
 }
 
@@ -159,6 +152,12 @@ class RestartAlarmReceiverA : BroadcastReceiver() {
         }
         Toast.makeText(p0, "restart service", Toast.LENGTH_SHORT).show()
     }
-
 }
 
+class TerminateSensorBroadCastReceiverA():BroadcastReceiver(){
+    override fun onReceive(p0: Context?, p1: Intent?) {
+        Log.e("TerminateSensorBroadCastReceiverA","TerminateSensorBroadCastReceiverA")
+        p0?.stopService(Intent(p0,MotionServiceA::class.java))
+    }
+
+}

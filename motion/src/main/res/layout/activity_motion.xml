@@ -95,7 +95,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20dp"
-        android:text="기본 스텝카운트 이벤트_5_5"
+        android:text="기본 스텝카운트 이벤트_5_5_a"
         app:layout_constraintTop_toBottomOf="@id/motion_service_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -104,8 +104,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20dp"
-        android:text="기본 스텝카운트 이벤트_5_60"
+        android:text="기본 스텝카운트 이벤트_5_15_b"
         app:layout_constraintTop_toBottomOf="@id/motion_service_btn_a"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    <Button
+        android:id="@+id/motion_service_btn_c"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="기본 스텝카운트 이벤트_5_30_c"
+        app:layout_constraintTop_toBottomOf="@id/motion_service_btn_b"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
     <Button
@@ -114,7 +123,7 @@
         android:layout_height="wrap_content"
         android:textSize="20dp"
         android:text="잠금화면_체크"
-        app:layout_constraintTop_toBottomOf="@id/motion_service_btn_b"
+        app:layout_constraintTop_toBottomOf="@id/motion_service_btn_c"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 

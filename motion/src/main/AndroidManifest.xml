@@ -31,6 +31,10 @@
             android:enabled="true"
             android:exported="true" />
         <service
+            android:name=".MotionServiceC"
+            android:enabled="true"
+            android:exported="true" />
+        <service
             android:name=".SensorService"
             android:enabled="true"
             android:exported="true" />
@@ -64,6 +68,10 @@
             android:enabled="true"
             android:exported="true" />
         <receiver
+            android:name=".RestartAlarmReceiverC"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
             android:name=".RestartGyroReceiver"
             android:enabled="true"
             android:exported="true" />
@@ -89,6 +97,18 @@
             android:exported="true" />
         <receiver
             android:name=".TerminateSensorBroadCastReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".TerminateSensorBroadCastReceiverA"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".TerminateSensorBroadCastReceiverB"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".TerminateSensorBroadCastReceiverC"
             android:enabled="true"
             android:exported="true" />
         <receiver

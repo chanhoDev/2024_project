@@ -149,7 +149,7 @@ class SensorServiceAndUsageBroadCastReceiver : BroadcastReceiver() {
                         )
                     }
                 }
-                if(usageEventList.map { it.eventType }.contains("KEYGUARD")){
+                if(usageEventList.map { it.eventType }.contains("KEYGUARD_HIDDEN") || usageEventList.map { it.eventType }.contains("KEYGUARD_SHOWN")){
                     PrefHelper["${Util.dateFormat.format(cal_start.time)} ~ ${
                         Util.dateFormat.format(
                             cal_end.time

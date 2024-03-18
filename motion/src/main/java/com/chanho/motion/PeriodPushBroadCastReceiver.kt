@@ -27,11 +27,11 @@ class PeriodPushBroadCastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val cal = Calendar.getInstance()
         cal.timeInMillis = System.currentTimeMillis()
-        cal.add(Calendar.MINUTE,1)
-        val intent = Intent(context,PeriodPushBroadCastReceiver::class.java)
-        val sender = PendingIntent.getBroadcast(context,0,intent, PendingIntent.FLAG_IMMUTABLE)
+        cal.add(Calendar.MINUTE, 1)
+        val intent = Intent(context, PeriodPushBroadCastReceiver::class.java)
+        val sender = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(cal.time.time,null),sender)
+        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(cal.time.time, null), sender)
 
         Log.e("주기적인 푸시알림", "SOS 알림!")
         val currentCal = Calendar.getInstance()
@@ -66,10 +66,11 @@ class PeriodPushBroadCastReceiver : BroadcastReceiver() {
 class PeriodPushConfirmCheckReceiver() : BroadcastReceiver() {
     override fun onReceive(p0: Context?, p1: Intent?) {
         Log.d("PeriodPushConfirmCheckReceiver", "onReceive 알림이 들어옴")
-        Toast.makeText(p0,"PeriodPushConfirmCheckReceiver",Toast.LENGTH_SHORT).show()
+        Toast.makeText(p0, "PeriodPushConfirmCheckReceiver", Toast.LENGTH_SHORT).show()
         val cal = Calendar.getInstance()
         cal.timeInMillis = System.currentTimeMillis()
-        PrefHelper["${Util.dateFormat.format(cal.time)}_PERIOD_PUSH_CONFIRM"] = "${Util.dateFormat.format(cal.time)}"
+        PrefHelper["${Util.dateFormat.format(cal.time)}_PERIOD_PUSH_CONFIRM"] =
+            "${Util.dateFormat.format(cal.time)}"
     }
 
 }

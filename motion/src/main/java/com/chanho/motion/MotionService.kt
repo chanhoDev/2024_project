@@ -145,6 +145,4 @@ class RestartAlarmReceiver : BroadcastReceiver() {
         }
         Toast.makeText(p0, "restart service", Toast.LENGTH_SHORT).show()
     }
-
 }
-
