@@ -99,6 +99,7 @@ class MotionService : Service(), SensorEventListener {
                     if (shakeTime + SHAKE_SKIP_TIME > currentTime) {
                         return@let
                     }
+                    Toast.makeText(this,"!!",Toast.LENGTH_SHORT).show()
                     shakeTime = currentTime
                     shakeCount++
                     PrefHelper[SHAKE_COUNT] = shakeCount

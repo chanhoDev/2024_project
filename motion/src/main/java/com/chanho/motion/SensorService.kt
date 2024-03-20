@@ -153,5 +153,4 @@ class TerminateSensorBroadCastReceiver():BroadcastReceiver(){
         Log.e("TerminateSensorBroadCastReceiver","받음")
         p0?.stopService(Intent(p0,SensorService::class.java))
     }
-
 }
