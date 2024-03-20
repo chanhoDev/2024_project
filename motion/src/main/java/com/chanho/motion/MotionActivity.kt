@@ -22,8 +22,6 @@ import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import com.chanho.common.Util
-import com.chanho.motion.SampleWorkerAppUsage.Companion.PREV_INITIAL_DATE
 import com.chanho.motion.databinding.ActivityMotionBinding
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -48,6 +46,22 @@ class MotionActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            when {
+                alarmManager.canScheduleExactAlarms() -> {
+                    Toast.makeText(this,"정확한 알림 설정된상태 ",Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Intent().apply {
+                        action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                    }.also {
+                        startActivity(it)
+                    }
+                }
+            }
+        }
         binding = ActivityMotionBinding.inflate(layoutInflater)
         setContentView(binding.root)
         onBindView()
@@ -93,6 +107,14 @@ class MotionActivity : AppCompatActivity() {
                 val intent = Intent(this@MotionActivity, MotionServiceB::class.java)
                 startForegroundService(intent)
             }
+            motionServiceBtnC.setOnClickListener {
+                val intent = Intent(this@MotionActivity, MotionServiceC::class.java)
+                startForegroundService(intent)
+            }
+            motionServiceBtnChangeTime.setOnClickListener {
+                val intent = Intent(this@MotionActivity, MotionServiceChangeTime::class.java)
+                startForegroundService(intent)
+            }
             lockScreenBtn.setOnClickListener {
                 //잠금화면 활성화 클릭 이벤트 처리1
 //                setPeriodTimeWorkerScreenLock(this@MotionActivity)
@@ -122,16 +144,36 @@ class MotionActivity : AppCompatActivity() {
                 //1분주기로 푸시알림을 발생한다
                 val cal = Calendar.getInstance()
                 cal.timeInMillis = System.currentTimeMillis()
-                cal.add(Calendar.MINUTE,1)
-                val intent = Intent(this@MotionActivity,PeriodPushBroadCastReceiver::class.java)
-                val sender = PendingIntent.getBroadcast(this@MotionActivity,0,intent, PendingIntent.FLAG_IMMUTABLE)
+                cal.add(Calendar.MINUTE, 1)
+                val intent = Intent(this@MotionActivity, PeriodPushBroadCastReceiver::class.java)
+                val sender = PendingIntent.getBroadcast(
+                    this@MotionActivity,
+                    0,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
                 val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(cal.time.time,null),sender)
+                alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(cal.time.time, null), sender)
+            }
+
+            usageStateManagerAndServiceBtn.setOnClickListener {
+                //3초뒤에 실행
+                val cal = Calendar.getInstance()
+                cal.timeInMillis = System.currentTimeMillis()
+                cal.add(Calendar.SECOND, 3)
+                val intent = Intent(this@MotionActivity, AppUsageBroadCastReceiver::class.java)
+                val sender = PendingIntent.getBroadcast(
+                    this@MotionActivity,
+                    0,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+                val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(cal.time.time, null), sender)
             }
 
         }
     }
-
 
 
     private fun onObserve(context: Context) {

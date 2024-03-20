@@ -5,7 +5,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- API 버전 28 이하 -->
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" /> <!-- API 버전 29 이상 -->
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32" />
+
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
@@ -28,6 +31,18 @@
             android:exported="true" />
         <service
             android:name=".MotionServiceB"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".MotionServiceC"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".MotionServiceChangeTime"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".SensorService"
             android:enabled="true"
             android:exported="true" />
         <service
@@ -60,6 +75,14 @@
             android:enabled="true"
             android:exported="true" />
         <receiver
+            android:name=".RestartAlarmReceiverC"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".RestartAlarmReceiverChangeTime"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
             android:name=".RestartGyroReceiver"
             android:enabled="true"
             android:exported="true" />
@@ -73,6 +96,34 @@
             android:exported="true" />
         <receiver
             android:name=".PeriodPushConfirmCheckReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".AppUsageBroadCastReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".SensorServiceAndUsageBroadCastReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".TerminateSensorBroadCastReceiver"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".TerminateSensorBroadCastReceiverA"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".TerminateSensorBroadCastReceiverB"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".TerminateSensorBroadCastReceiverC"
+            android:enabled="true"
+            android:exported="true" />
+        <receiver
+            android:name=".TerminateSensorBroadCastReceiverChageTime"
             android:enabled="true"
             android:exported="true" />
         <receiver

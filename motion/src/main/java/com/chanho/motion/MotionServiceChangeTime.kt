@@ -13,32 +13,49 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.IBinder
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.chanho.common.Constants
 import com.chanho.common.PrefHelper
+import com.chanho.common.Util
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.util.Calendar
 import java.util.Timer
 import java.util.TimerTask
 
-const val SERVICE_ID = 2
 
-class MotionService : Service(), SensorEventListener {
+class MotionServiceChangeTime : Service(), SensorEventListener {
     private var shakeTime = 0L
-    private var shakeCount = 0
+
+    //    private var shakeCount = 0
     lateinit var notiBuilder: NotificationCompat.Builder
     private lateinit var sensorManager: SensorManager
     private lateinit var acceleroMeter: Sensor
     private lateinit var acceleroMeterGravity: Sensor
+    private var checkUserMotion = false
+    private var cal = Calendar.getInstance()
+
+
+    companion object {
+        val CHECK_5_MIN_CODE = 1000
+        val SHAKE_THRESHOLD_GRAVITY = 1.05F
+        val SHAKE_SKIP_TIME = 500
+        val REST_TIME = "restTime"
+        val MAX_REST_TIME = 120
+        val MIN_REST_TIME = 5
+    }
 
     override fun onCreate() {
         super.onCreate()
+        checkUserMotion = false
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         acceleroMeter = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) as Sensor
         acceleroMeterGravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) as Sensor
+        check5Min()
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -47,7 +64,6 @@ class MotionService : Service(), SensorEventListener {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         sensorManager.registerListener(this, acceleroMeter, SensorManager.SENSOR_DELAY_NORMAL)
-        shakeCount = PrefHelper[SHAKE_COUNT, 0]
 
         val intent = Intent(this, MotionActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
@@ -56,8 +72,7 @@ class MotionService : Service(), SensorEventListener {
             PendingIntent.FLAG_IMMUTABLE
         )
         notiBuilder = NotificationCompat.Builder(this, Constants.FORE_CHANNEL_ID)
-            .setContentTitle("forground기본")
-            .setContentText("진행상황:$shakeCount")
+            .setContentTitle("forgroundChangeTime")
             .setOnlyAlertOnce(true)
             .setSmallIcon(com.chanho.common.R.drawable.ic_launcher_waplat)
             .setContentIntent(pendingIntent)
@@ -74,10 +89,11 @@ class MotionService : Service(), SensorEventListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e("motionService", "onDestroy!! shakeCount = $shakeCount")
+        cal = Calendar.getInstance()
+        Log.e("motionService", "onDestroy!! shakeTime = ${Util.dateFormat.format(cal.time)}")
         sensorManager.unregisterListener(this)
-        PrefHelper[SHAKE_COUNT] = shakeCount
-        callAlarmManager()
+        PrefHelper[Util.dateFormat.format(cal.time)] = "${Util.dateFormat.format(cal.time)}"
+        setRestTime()
     }
 
     override fun onSensorChanged(p0: SensorEvent?) {
@@ -99,51 +115,91 @@ class MotionService : Service(), SensorEventListener {
                     if (shakeTime + SHAKE_SKIP_TIME > currentTime) {
                         return@let
                     }
-                    Toast.makeText(this,"!!",Toast.LENGTH_SHORT).show()
-                    shakeTime = currentTime
-                    shakeCount++
-                    PrefHelper[SHAKE_COUNT] = shakeCount
                     GlobalScope.launch {
+                        cal = Calendar.getInstance()
+                        onUserMotionChanged()
+                        shakeTime = currentTime
                         val manager = getSystemService(NotificationManager::class.java)
-                        notiBuilder.setContentText("진행상황:$shakeCount")
+                        notiBuilder.setContentText("진행상황:${Util.dateFormat.format(cal.time)}")
                         manager.notify(SERVICE_ID, notiBuilder.build())
                         manager.cancel(SERVICE_ID)
                     }
-                    Log.e("결과값", "onSensorChanged:Shake 발생 $shakeTime $shakeCount")
+                    Log.e("결과값", "onSensorChanged:Shake 발생 시간 ${Util.dateFormat.format(cal.time)}")
                 }
             }
         }
     }
 
-    private fun callAlarmManager(){
+    private fun onUserMotionChanged() {
+        checkUserMotion = true
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent =  Intent(this, TerminateSensorBroadCastReceiverChageTime::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            CHECK_5_MIN_CODE,
+            intent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_NO_CREATE
+        )
+        try {
+            alarmManager.cancel(pendingIntent)
+        }catch (e:Exception){
+        }
+        stopService(Intent(this, MotionServiceChangeTime::class.java))
+    }
+
+    private fun check5Min() {
+        //5분이 끝나면 서비스를 종료한다
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = System.currentTimeMillis()
+        calendar.add(Calendar.MINUTE, 5)
+        val intent = Intent(this, TerminateSensorBroadCastReceiverChageTime::class.java)
+        val sender =
+            PendingIntent.getBroadcast(this, CHECK_5_MIN_CODE, intent, PendingIntent.FLAG_IMMUTABLE)
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(calendar.time.time, null), sender)
+    }
+
+    private fun setRestTime() {
+        var restTime = PrefHelper[REST_TIME, MIN_REST_TIME]
+        if (checkUserMotion) {
+            if (restTime < MAX_REST_TIME) {
+                restTime += MIN_REST_TIME
+            }
+        } else {
+            restTime = MIN_REST_TIME
+        }
+        PrefHelper[REST_TIME] = restTime
+
         val cal = Calendar.getInstance()
         cal.timeInMillis = System.currentTimeMillis()
-        cal.add(Calendar.SECOND,3)
-        val intent = Intent(this,RestartAlarmReceiver::class.java)
-        val sender = PendingIntent.getBroadcast(this,0,intent, PendingIntent.FLAG_IMMUTABLE)
+        cal.add(Calendar.MINUTE, restTime)
+        val intent = Intent(this, RestartAlarmReceiverChangeTime::class.java)
+        val sender = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(cal.time.time,null),sender)
+        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(cal.time.time, null), sender)
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
     }
-
-    companion object {
-        val SHAKE_THRESHOLD_GRAVITY = 1.05F
-        val SHAKE_SKIP_TIME = 500
-        val SHAKE_COUNT = "shakeCount"
-    }
 }
 
-class RestartAlarmReceiver : BroadcastReceiver() {
+class RestartAlarmReceiverChangeTime : BroadcastReceiver() {
     override fun onReceive(p0: Context?, p1: Intent?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val intent = Intent(p0, MotionService::class.java)
+            val intent = Intent(p0, MotionServiceChangeTime::class.java)
             p0?.startForegroundService(intent)
         } else {
-            val intent = Intent(p0, MotionService::class.java)
+            val intent = Intent(p0, MotionServiceChangeTime::class.java)
             p0?.startService(intent)
         }
         Toast.makeText(p0, "restart service", Toast.LENGTH_SHORT).show()
     }
+}
+
+class TerminateSensorBroadCastReceiverChageTime() : BroadcastReceiver() {
+    override fun onReceive(p0: Context?, p1: Intent?) {
+        Log.e("TerminateSensorBroadCastReceiverC", "TerminateSensorBroadCastReceiverChageTime")
+        p0?.stopService(Intent(p0, MotionServiceChangeTime::class.java))
+    }
+
 }

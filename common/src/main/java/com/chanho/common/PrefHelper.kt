@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 object PrefHelper {
-    private const val APP_PREFERENCES = "private_project_4"
+    private const val APP_PREFERENCES = "private_project_5"
     lateinit var preferences: SharedPreferences
 
     fun init(context: Context) {

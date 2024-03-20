@@ -38,7 +38,10 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, MotionActivity::class.java)
             startActivity(intent)
         }
-
+        binding.composeTestBtn.setOnClickListener {
+//            val intent = Intent(this, ComposeMainActivity::class.java)
+//            startActivity(intent)
+        }
     }
 
 }
